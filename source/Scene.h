@@ -50,6 +50,8 @@ namespace dae
 		std::vector<TriangleMesh> m_TriangleMeshGeometries{};
 		std::vector<Light> m_Lights{};
 		std::vector<Material*> m_Materials{};
+		HitRecord m_Hit{};
+
 
 		Camera m_Camera{};
 

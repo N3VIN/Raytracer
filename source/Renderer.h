@@ -31,5 +31,7 @@ namespace dae
 
 		int m_Width{};
 		int m_Height{};
+		float m_Fov{0}; // yet..
+		float m_AspectRatio{};
 	};
 }

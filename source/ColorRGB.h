@@ -5,9 +5,24 @@ namespace dae
 {
 	struct ColorRGB
 	{
+		// Data Members
 		float r{};
 		float g{};
 		float b{};
+
+		// Constructor & Destructor
+		ColorRGB() = default;
+		ColorRGB(float _r, float _g, float _b)
+			: r(_r), g(_g), b(_b) {}
+		~ColorRGB() = default;
+
+
+		ColorRGB(const ColorRGB&) = default;
+		ColorRGB(ColorRGB&&) noexcept = default;
+		ColorRGB& operator=(const ColorRGB&) = default;
+		ColorRGB& operator=(ColorRGB&&) noexcept = default;
+
+		//----
 
 		void MaxToOne()
 		{

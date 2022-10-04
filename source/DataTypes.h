@@ -9,18 +9,48 @@ namespace dae
 #pragma region GEOMETRY
 	struct Sphere
 	{
+		// Data Types
 		Vector3 origin{};
 		float radius{};
 
 		unsigned char materialIndex{ 0 };
+
+		// Constructor & Destructor
+		Sphere() = default;
+		Sphere(const Vector3& _origin, float _radius, unsigned char _materialIndex)
+			: origin(_origin)
+			, radius(_radius)
+			, materialIndex{ _materialIndex } {}
+		
+		~Sphere() = default;
+
+		Sphere(const Sphere&) = default;
+		Sphere(Sphere&&) noexcept = default;
+		Sphere& operator=(const Sphere&) = default;
+		Sphere& operator=(Sphere&&) noexcept = default;
 	};
 
 	struct Plane
 	{
+		// Data Types
 		Vector3 origin{};
 		Vector3 normal{};
 
 		unsigned char materialIndex{ 0 };
+
+		// Constructor & Destructor
+		Plane() = default;
+		Plane(const Vector3& _normal, const Vector3& _origin, unsigned char _materialIndex)
+			: origin(_origin)
+			, normal(_normal)
+			, materialIndex{ _materialIndex } {}
+
+		~Plane() = default;
+
+		Plane(const Plane&) = default;
+		Plane(Plane&&) noexcept = default;
+		Plane& operator=(const Plane&) = default;
+		Plane& operator=(Plane&&) noexcept = default;
 	};
 
 	enum class TriangleCullMode
@@ -160,11 +190,28 @@ namespace dae
 #pragma region MISC
 	struct Ray
 	{
+		// Data Types
 		Vector3 origin{};
 		Vector3 direction{};
 
 		float min{ 0.0001f };
 		float max{ FLT_MAX };
+
+		// Constructor & Destructor
+		Ray(const Vector3& _origin, const Vector3& _direction)
+			: origin(_origin), direction(_direction) {}
+		~Ray() = default;
+
+		Ray(const Ray&) = default;
+		Ray(Ray&&) noexcept = default;
+		Ray& operator=(const Ray&) = default;
+		Ray& operator=(Ray&&) noexcept = default;
+
+		// Functions
+		/*Vector3 at(float t) const
+		{
+			return origin + (direction * t);
+		}*/
 	};
 
 	struct HitRecord
