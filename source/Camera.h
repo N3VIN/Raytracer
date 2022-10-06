@@ -10,26 +10,35 @@ namespace dae
 {
 	struct Camera
 	{
-		Camera() = default;
-
-		Camera(const Vector3& _origin, float _fovAngle):
-			origin{_origin},
-			fovAngle{_fovAngle}
-		{
-		}
-
-
+		// Data Types
 		Vector3 origin{};
-		float fovAngle{90.f};
+		float fovAngle{};
+		float degrees{};
 
-		Vector3 forward{Vector3::UnitZ};
-		Vector3 up{Vector3::UnitY};
-		Vector3 right{Vector3::UnitX};
+		Vector3 forward{ Vector3::UnitZ };
+		Vector3 up{ Vector3::UnitY };
+		Vector3 right{ Vector3::UnitX };
 
-		float totalPitch{0.f};
-		float totalYaw{0.f};
+		float totalPitch{ 0.f };
+		float totalYaw{ 0.f };
 
 		Matrix cameraToWorld{};
+
+		// Constructor & Destructor
+		Camera() = default;
+		Camera(const Vector3& _origin, float _fovAngle) :
+			origin{ _origin }
+		{
+			fovAngle = tan((TO_RADIANS * _fovAngle) / 2);
+		}
+
+		~Camera() = default;
+
+		Camera(const Camera&) = default;
+		Camera(Camera&&) noexcept = default;
+		Camera& operator=(const Camera&) = default;
+		Camera& operator=(Camera&&) noexcept = default;
+		
 
 
 		Matrix CalculateCameraToWorld()
@@ -43,6 +52,9 @@ namespace dae
 		{
 			const float deltaTime = pTimer->GetElapsed();
 
+
+
+
 			//Keyboard Input
 			const uint8_t* pKeyboardState = SDL_GetKeyboardState(nullptr);
 
@@ -53,6 +65,12 @@ namespace dae
 
 			//todo: W2
 			//assert(false && "Not Implemented Yet");
+		}
+
+		void updateFovAngle(float angle)
+		{
+			fovAngle = tan((TO_RADIANS * angle) / 2);
+
 		}
 	};
 }

@@ -29,6 +29,7 @@ void Renderer::Render(Scene* pScene) const
 	auto& materials = pScene->GetMaterials();
 	auto& lights = pScene->GetLights();
 
+	float fov = camera.fovAngle;
 
 	// Testing the dot and cross product.
 	//float dotResult{};
@@ -47,14 +48,14 @@ void Renderer::Render(Scene* pScene) const
 		for (int py{}; py < m_Height; ++py)
 		{
 			//Raster Space.
-			float x{ float((2 * ((px + 0.5f) / m_Width) - 1)) * m_AspectRatio };
-			float y{ float(1 - 2 * ((py + 0.5f) / m_Height)) };
+			float x{ float((2 * ((px + 0.5f) / m_Width) - 1)) * (fov * m_AspectRatio) };
+			float y{ float(1 - 2 * ((py + 0.5f) / m_Height)) * fov };
 
 			//RayDirection calculations.
 			Vector3 rayDirection{ (x * right) + (y * up) + look};
 			rayDirection.Normalize();
 
-			Ray viewRay{ { 0,0,0 }, rayDirection };
+			Ray viewRay{ camera.origin, rayDirection };
 			ColorRGB finalColor{};
 
 			HitRecord closestHit{};
@@ -62,8 +63,8 @@ void Renderer::Render(Scene* pScene) const
 			/*Sphere testSphere{ {0.0f, 0.0f, 100.0f}, 50.0f, 0 };
 			GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);*/
 
-			Plane testPlane{ {0.0f, -50.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0 };
-			GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);
+			/*Plane testPlane{ {0.0f, -50.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0 };
+			GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);*/
 
 			pScene->GetClosestHit(viewRay, closestHit);
 

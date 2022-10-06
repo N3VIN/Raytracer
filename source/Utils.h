@@ -65,17 +65,18 @@ namespace dae
 
 			if (t >= ray.min && t <= ray.max)
 			{
+				hitRecord.didHit = false;
+				return false;
+			}
+			else
+			{
+				// Dont know why it works the other way around.
 				hitRecord.materialIndex = plane.materialIndex;
 				hitRecord.origin = ray.origin + (t * ray.direction);
 				hitRecord.didHit = true;
 				hitRecord.t = t;
 				hitRecord.normal = plane.normal;
 				return true;
-			}
-			else
-			{
-				hitRecord.didHit = false;
-				return false;
 			}
 		}
 

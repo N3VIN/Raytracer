@@ -28,22 +28,36 @@ namespace dae {
 
 	void dae::Scene::GetClosestHit(const Ray& ray, HitRecord& closestHit) const
 	{
+		// doesnt work for multiple plane geometries. Probabaly because t value issue?
+
+		/*for (const auto& i : m_PlaneGeometries)
+		{
+			if (GeometryUtils::HitTest_Plane(i, ray, closestHit))
+			{
+
+				if (closestHit.t < m_Hit.t && closestHit.t != 0)
+				{
+					continue;
+				}
+				closestHit = m_Hit;
+
+			}
+		}*/
+
+		//..
 
 		for (const auto &i : m_SphereGeometries)
 		{
-			GeometryUtils::HitTest_Sphere(i, ray, closestHit);
-
-			if (closestHit.t > m_Hit.t)
+			if (GeometryUtils::HitTest_Sphere(i, ray, closestHit))
 			{
+
+				if (closestHit.t < m_Hit.t && closestHit.t != 0)
+				{
+					continue;
+				}
 				closestHit = m_Hit;
-			}
-			
-			/*if (closestHit.t < m_Hit.t && closestHit.t != 0)
-			{
-				continue;
-			}
-			closestHit = m_Hit;*/
 
+			}	
 		}
 		
 	}
@@ -141,6 +155,41 @@ namespace dae {
 		AddPlane({ 0.f, -75.f, 0.f }, { 0.f, 1.f,0.f }, matId_Solid_Yellow);
 		AddPlane({ 0.f, 75.f, 0.f }, { 0.f, -1.f,0.f }, matId_Solid_Yellow);
 		AddPlane({ 0.f, 0.f, 125.f }, { 0.f, 0.f,-1.f }, matId_Solid_Magenta);
+	}
+#pragma endregion
+
+#pragma region SCENE W2
+	void Scene_W2::Initialize()
+	{
+		m_Camera.origin = { 0.f, 3.f, -9.f };
+		m_Camera.updateFovAngle(90.f);
+
+		//default: Material id0 >> SolidColor Material (RED)
+		constexpr unsigned char matId_Solid_Red = 0;
+		const unsigned char matId_Solid_Blue = AddMaterial(new Material_SolidColor{ colors::Blue });
+
+		const unsigned char matId_Solid_Yellow = AddMaterial(new Material_SolidColor{ colors::Yellow });
+		const unsigned char matId_Solid_Green = AddMaterial(new Material_SolidColor{ colors::Green });
+		const unsigned char matId_Solid_Magenta = AddMaterial(new Material_SolidColor{ colors::Magenta });
+
+		//Spheres
+		AddSphere({ -1.75f, 1.f, 0.f }, 0.75f, matId_Solid_Red);
+		AddSphere({ 0.f, 1.f, 0.f }, 0.75f, matId_Solid_Blue);
+		AddSphere({ 1.75f, 1.f, 0.f }, 0.75f, matId_Solid_Red);
+		AddSphere({ -1.75f, 3.f, 0.f }, 0.75f, matId_Solid_Blue);
+		AddSphere({ 0.f, 3.f, 0.f }, 0.75f, matId_Solid_Red);
+		AddSphere({ 1.75f, 3.f, 0.f }, 0.75f, matId_Solid_Blue);
+		
+
+		//Plane
+		AddPlane({ -5.f, 0.f, 0.f }, { 1.f, 0.f,0.f }, matId_Solid_Green);
+		AddPlane({ 5.f, 0.f, 0.f }, { -1.f, 0.f,0.f }, matId_Solid_Green);
+		AddPlane({ 0.f, 0.f, 0.f }, { 0.f, 1.f,0.f }, matId_Solid_Yellow);
+		AddPlane({ 0.f, 10.f, 0.f }, { 0.f, -1.f,0.f }, matId_Solid_Yellow);
+		AddPlane({ 0.f, 0.f, 10.f }, { 0.f, 0.f,-1.f }, matId_Solid_Magenta);
+
+		//Light
+		AddPointLight({ 0.f, 5.f, -5.f }, 70.f, colors::White);
 	}
 #pragma endregion
 }
