@@ -116,23 +116,38 @@ namespace dae {
 
 	Matrix Matrix::CreateRotationX(float pitch)
 	{
-		//todo W1
-		assert(false && "Not Implemented Yet");
-		return {};
+		float c = cos(pitch);
+		float s = sin(pitch);
+
+		return Matrix{
+			Vector4{ 1, 0, 0, 0 },
+			Vector4{ 0, c, -s, 0 },
+			Vector4{ 0, s, c, 0 },
+			Vector4{ 0, 0, 0, 1 } };
 	}
 
 	Matrix Matrix::CreateRotationY(float yaw)
 	{
-		//todo W1
-		assert(false && "Not Implemented Yet");
-		return {};
+		float c = cos(yaw);
+		float s = sin(yaw);
+
+		return Matrix{
+			Vector4{ c, 0, s, 0 },
+			Vector4{ 0, 1, 0, 0 },
+			Vector4{ -s, 0, c, 0 },
+			Vector4{ 0, 0, 0, 1 } };
 	}
 
 	Matrix Matrix::CreateRotationZ(float roll)
 	{
-		//todo W1
-		assert(false && "Not Implemented Yet");
-		return {};
+		float c = cos(roll);
+		float s = sin(roll);
+
+		return Matrix{
+			Vector4{ c, -s, 0, 0 },
+			Vector4{ s, c, 0, 0 },
+			Vector4{ 0, 0, 1, 0 },
+			Vector4{ 0, 0, 0, 1 } };
 	}
 
 	Matrix Matrix::CreateRotation(const Vector3& r)

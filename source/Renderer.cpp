@@ -43,6 +43,9 @@ void Renderer::Render(Scene* pScene) const
 
 	Vector3 right{Vector3::UnitX}, up{Vector3::UnitY}, look{Vector3::UnitZ};
 
+	//Look at matrix.
+	const Matrix cameraToWorld{ camera.CalculateCameraToWorld() };
+
 	for (int px{}; px < m_Width; ++px)
 	{
 		for (int py{}; py < m_Height; ++py)
@@ -51,8 +54,16 @@ void Renderer::Render(Scene* pScene) const
 			float x{ float((2 * ((px + 0.5f) / m_Width) - 1)) * (fov * m_AspectRatio) };
 			float y{ float(1 - 2 * ((py + 0.5f) / m_Height)) * fov };
 
+			Matrix defaultForwardVector{ 
+				Vector4{x, 0, 0, 0}, 
+				Vector4{0, y, 0, 0}, 
+				Vector4{0, 0, 1, 0}, 
+				Vector4{0, 0, 0, 0} };
+			Matrix transformedVector{ cameraToWorld * defaultForwardVector };
+
 			//RayDirection calculations.
-			Vector3 rayDirection{ (x * right) + (y * up) + look};
+			//Vector3 rayDirection{ (x * right) + (y * up) + look};
+			Vector3 rayDirection{ transformedVector.GetAxisX().x, transformedVector.GetAxisY().y, transformedVector.GetAxisZ().z};
 			rayDirection.Normalize();
 
 			Ray viewRay{ camera.origin, rayDirection };

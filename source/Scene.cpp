@@ -162,7 +162,7 @@ namespace dae {
 	void Scene_W2::Initialize()
 	{
 		m_Camera.origin = { 0.f, 3.f, -9.f };
-		m_Camera.updateFovAngle(90.f);
+		m_Camera.updateFovAngle(45.f);
 
 		//default: Material id0 >> SolidColor Material (RED)
 		constexpr unsigned char matId_Solid_Red = 0;
