@@ -28,7 +28,7 @@ namespace dae {
 
 	void dae::Scene::GetClosestHit(const Ray& ray, HitRecord& closestHit)
 	{
-		HitRecord m_Hit{};
+		HitRecord hit{};
 
 		// doesnt work for multiple plane geometries. Probabaly because t value issue?
 
@@ -36,13 +36,13 @@ namespace dae {
 		{
 			if (GeometryUtils::HitTest_Plane(i, ray, closestHit))
 			{
-				if (closestHit.t < m_Hit.t)
+				if (closestHit.t < hit.t)
 				{
-					m_Hit = closestHit;
+					hit = closestHit;
 				}
 				else
 				{
-					closestHit = m_Hit;
+					closestHit = hit;
 				}
 			}
 		}
@@ -54,13 +54,13 @@ namespace dae {
 			// use the new hit for the intersection.
 			if (GeometryUtils::HitTest_Sphere(i, ray, closestHit))
 			{
-				if (closestHit.t < m_Hit.t)
+				if (closestHit.t < hit.t)
 				{
-					m_Hit = closestHit;
+					hit = closestHit;
 				}
 				else
 				{
-					closestHit = m_Hit;
+					closestHit = hit;
 				}
 			}	
 		}
