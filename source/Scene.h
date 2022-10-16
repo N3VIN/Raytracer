@@ -34,7 +34,7 @@ namespace dae
 		}
 
 		Camera& GetCamera() { return m_Camera; }
-		void GetClosestHit(const Ray& ray, HitRecord& closestHit) const;
+		void GetClosestHit(const Ray& ray, HitRecord& closestHit);
 		bool DoesHit(const Ray& ray) const;
 
 		const std::vector<Plane>& GetPlaneGeometries() const { return m_PlaneGeometries; }
@@ -50,7 +50,6 @@ namespace dae
 		std::vector<TriangleMesh> m_TriangleMeshGeometries{};
 		std::vector<Light> m_Lights{};
 		std::vector<Material*> m_Materials{};
-		HitRecord m_Hit{};
 
 
 		Camera m_Camera{};

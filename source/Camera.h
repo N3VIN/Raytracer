@@ -19,7 +19,7 @@ namespace dae
 		Vector3 up{ Vector3::UnitY };
 		Vector3 right{ Vector3::UnitX };
 		
-		// manually trying to rotate doesnt work properly as showed in the pdf.
+		//manually trying to rotate doesnt work properly as showed in the pdf.
 		/*Vector3 forward{ 0.266f, -0.453f, 0.860f };
 		Vector3 up{ Vector3::UnitY };
 		Vector3 right{ Vector3::UnitX };*/
@@ -82,17 +82,10 @@ namespace dae
 		{
 			const float deltaTime = pTimer->GetElapsed();
 
-
-
-
 			//Keyboard Input
-			//const uint8_t* pKeyboardState = SDL_GetKeyboardState(nullptr);
 			KeyboardMovement(deltaTime);
 
 			//Mouse Input
-			//int mouseX{}, mouseY{};
-			//const uint32_t mouseState = SDL_GetRelativeMouseState(&mouseX, &mouseY);
-
 			MouseMovement(deltaTime);
 		}
 
@@ -179,16 +172,46 @@ namespace dae
 			{
 				totalYaw += mouseX * (sensitivity * deltaTime);
 				totalPitch += mouseY * (sensitivity * deltaTime);
+
+				//UpdateCamera();
+
+				Matrix rotationMatrix = Matrix::CreateRotationX(totalPitch) * Matrix::CreateRotationY(totalYaw);
+				forward = rotationMatrix.TransformVector(Vector3::UnitZ);
+				forward.Normalize();
+
+				right = Vector3::Cross(Vector3::UnitZ, forward).Normalized();
+				up = Vector3::Cross(forward, right).Normalized();
 			}
 			else if (mouse == SDL_BUTTON(1))
 			{
 				origin += forward * (mouseY * (sensitivity * deltaTime));
 				totalYaw += mouseX * (sensitivity * deltaTime);
+
+				//UpdateCamera();
+
+				Matrix rotationMatrix = Matrix::CreateRotationX(totalPitch) * Matrix::CreateRotationY(totalYaw);
+				forward = rotationMatrix.TransformVector(Vector3::UnitZ);
+				forward.Normalize();
+
+				right = Vector3::Cross(Vector3::UnitZ, forward).Normalized();
+				up = Vector3::Cross(forward, right).Normalized();
 			}
 
-			Matrix rotationMatrix = Matrix::CreateRotationX(totalPitch) * Matrix::CreateRotationY(totalYaw);
-			forward = rotationMatrix.TransformVector(Vector3::UnitZ);
-			forward.Normalize();
+			
+		}
+
+		void UpdateCamera()
+		{
+			Vector3 worldUp{ 0, 1.f, 0 };
+
+			forward.x = cos(TO_RADIANS * totalYaw) * cos(TO_RADIANS * totalPitch);
+			forward.y = sin(TO_RADIANS * totalPitch);
+			forward.z = sin(TO_RADIANS * totalYaw) * cos(TO_RADIANS * totalPitch);
+			forward = forward.Normalized();
+
+			right = Vector3::Cross(worldUp, forward).Normalized();
+			up = Vector3::Cross(forward, right).Normalized();
+
 		}
 	};
 }

@@ -132,9 +132,9 @@ namespace dae {
 		float s = sin(yaw);
 
 		return Matrix{
-			Vector4{ c, 0, s, 0 },
+			Vector4{ c, 0, -s, 0 },
 			Vector4{ 0, 1, 0, 0 },
-			Vector4{ -s, 0, c, 0 },
+			Vector4{ s, 0, c, 0 },
 			Vector4{ 0, 0, 0, 1 } };
 	}
 
@@ -144,8 +144,8 @@ namespace dae {
 		float s = sin(roll);
 
 		return Matrix{
-			Vector4{ c, -s, 0, 0 },
-			Vector4{ s, c, 0, 0 },
+			Vector4{ c, s, 0, 0 },
+			Vector4{ -s, c, 0, 0 },
 			Vector4{ 0, 0, 1, 0 },
 			Vector4{ 0, 0, 0, 1 } };
 	}

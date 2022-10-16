@@ -72,9 +72,9 @@ void Renderer::Render(Scene* pScene) const
 			HitRecord closestHit{};
 
 			/*Sphere testSphere{ {0.0f, 0.0f, 100.0f}, 50.0f, 0 };
-			GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);*/
+			GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);
 
-			/*Plane testPlane{ {0.0f, -50.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0 };
+			Plane testPlane{ {0.0f, -50.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0 };
 			GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);*/
 
 			pScene->GetClosestHit(viewRay, closestHit);

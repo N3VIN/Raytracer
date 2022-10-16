@@ -26,37 +26,42 @@ namespace dae {
 		m_Materials.clear();
 	}
 
-	void dae::Scene::GetClosestHit(const Ray& ray, HitRecord& closestHit) const
+	void dae::Scene::GetClosestHit(const Ray& ray, HitRecord& closestHit)
 	{
+		HitRecord m_Hit{};
+
 		// doesnt work for multiple plane geometries. Probabaly because t value issue?
 
-		/*for (const auto& i : m_PlaneGeometries)
+		for (const auto& i : m_PlaneGeometries)
 		{
 			if (GeometryUtils::HitTest_Plane(i, ray, closestHit))
 			{
-
-				if (closestHit.t < m_Hit.t && closestHit.t != 0)
+				if (closestHit.t < m_Hit.t)
 				{
-					continue;
+					m_Hit = closestHit;
 				}
-				closestHit = m_Hit;
-
+				else
+				{
+					closestHit = m_Hit;
+				}
 			}
-		}*/
+		}
 
 		//..
 
 		for (const auto &i : m_SphereGeometries)
 		{
+			// use the new hit for the intersection.
 			if (GeometryUtils::HitTest_Sphere(i, ray, closestHit))
 			{
-
-				if (closestHit.t < m_Hit.t && closestHit.t != 0)
+				if (closestHit.t < m_Hit.t)
 				{
-					continue;
+					m_Hit = closestHit;
 				}
-				closestHit = m_Hit;
-
+				else
+				{
+					closestHit = m_Hit;
+				}
 			}	
 		}
 		
