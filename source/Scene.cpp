@@ -69,9 +69,22 @@ namespace dae {
 
 	bool Scene::DoesHit(const Ray& ray) const
 	{
-		//todo W3
-		assert(false && "No Implemented Yet!");
-		return false;
+		HitRecord tempHitRecord{};
+
+		for (const auto& i : m_PlaneGeometries)
+		{
+			return GeometryUtils::HitTest_Plane(i, ray, tempHitRecord);
+
+		}
+
+		//..
+
+		for (const auto& i : m_SphereGeometries)
+		{
+			return GeometryUtils::HitTest_Sphere(i, ray, tempHitRecord);
+
+		}
+
 	}
 
 #pragma region Scene Helpers

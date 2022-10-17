@@ -81,11 +81,27 @@ void Renderer::Render(Scene* pScene) const
 
 			if (closestHit.didHit)
 			{
-				finalColor = materials[closestHit.materialIndex]->Shade();
-				/*const float scaled_t = closestHit.t / 500.f;
-				finalColor = { scaled_t, scaled_t, scaled_t };*/
-			}
+				for (const auto& i : lights)
+				{
+					bool isPointVisible{ true };
+					Ray lightRay{ closestHit.origin, LightUtils::GetDirectionToLight(i, closestHit.origin) };
+					lightRay.max = LightUtils::GetDirectionToLight(i, closestHit.origin).Magnitude();
+					isPointVisible = pScene->DoesHit(lightRay);
 
+					if (isPointVisible)
+					{
+						finalColor = materials[closestHit.materialIndex]->Shade() * 0.f;
+
+					}
+					else
+					{
+						finalColor = materials[closestHit.materialIndex]->Shade();
+						/*const float scaled_t = closestHit.t / 500.f;
+						finalColor = { scaled_t, scaled_t, scaled_t };*/
+					}
+					
+				}
+			}
 			//Update Color in Buffer
 			finalColor.MaxToOne();
 
