@@ -90,7 +90,7 @@ void Renderer::Render(Scene* pScene) const
 
 					if (isPointVisible)
 					{
-						finalColor = materials[closestHit.materialIndex]->Shade() * 0.f;
+						finalColor = materials[closestHit.materialIndex]->Shade() * 0.5f;
 
 					}
 					else
