@@ -27,10 +27,25 @@ namespace dae
 
 			if (discriminant > 0)
 			{
+
+
+				t = ((-b) + sqrt(discriminant)) / (2 * a);
+
+				if (t <= ray.min)
+				{
+					t = ((-b) - sqrt(discriminant)) / (2 * a);
+
+				}
+
 				t = ((-b) - sqrt(discriminant)) / (2 * a);
 
 				if (t >= ray.min && t <= ray.max)
 				{
+					if (ignoreHitRecord)
+					{
+						return true;
+					}
+
 					hitRecord.materialIndex = sphere.materialIndex;
 					hitRecord.origin = ray.origin + (t * ray.direction);
 					hitRecord.didHit = true;
@@ -65,6 +80,11 @@ namespace dae
 
 			if (t >= ray.min && t <= ray.max)
 			{
+				if (ignoreHitRecord)
+				{
+					return true;
+				}
+
 				hitRecord.materialIndex = plane.materialIndex;
 				hitRecord.origin = ray.origin + (t * ray.direction);
 				hitRecord.didHit = true;
@@ -128,9 +148,8 @@ namespace dae
 
 		inline ColorRGB GetRadiance(const Light& light, const Vector3& target)
 		{
-			//todo W3
-			assert(false && "No Implemented Yet!");
-			return {};
+			return  light.color * (light.intensity / Vector3::Dot(light.origin - target, light.origin - target));
+
 		}
 	}
 

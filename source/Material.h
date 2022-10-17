@@ -59,9 +59,8 @@ namespace dae
 
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			return BRDF::Lambert(m_DiffuseReflectance, m_DiffuseColor);
+
 		}
 
 	private:
@@ -84,9 +83,8 @@ namespace dae
 
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			return BRDF::Lambert(m_DiffuseReflectance, m_DiffuseColor) +
+				BRDF::Phong(m_SpecularReflectance, m_PhongExponent, l, v, hitRecord.normal);
 		}
 
 	private:
@@ -105,13 +103,47 @@ namespace dae
 		Material_CookTorrence(const ColorRGB& albedo, float metalness, float roughness):
 			m_Albedo(albedo), m_Metalness(metalness), m_Roughness(roughness)
 		{
+			m_Albedo = ((bool)m_Metalness) ? m_Albedo : (ColorRGB(0.04f, 0.04f, 0.04f));
+			//
+			if (m_Roughness == 0.0f)
+			{
+				m_Roughness = 0.01f;
+			}
 		}
 
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			/*Vector3 halfVector{ (v + l) / (v + l).Magnitude() };
+			ColorRGB fresnel{};
+			float hDotV{ std::max(Vector3::Dot(halfVector, v) , 0.f) };
+			fresnel = m_Albedo + (ColorRGB{ 1, 1, 1 } - m_Albedo) * (powf(1 - hDotV, 5));*/
+			/*RGBColor kd{};
+			if (m_IsMetal)
+			{
+				kd = RGBColor{ 1,1,1 } - fresnel;
+			}*/
+			Vector3 halfVector{ (v + l) / (v + l).Magnitude() };
+
+			ColorRGB fresnel{};
+			fresnel = BRDF::FresnelFunction_Schlick(halfVector, v, m_Albedo);
+
+			ColorRGB cookTorrance{};
+			float normalDistribution{ BRDF::NormalDistribution_GGX(hitRecord.normal, halfVector, m_Roughness) };
+			float geometryFunction{ BRDF::GeometryFunction_Smith(hitRecord.normal, v, l, m_Roughness) };
+
+			cookTorrance = (fresnel * normalDistribution * geometryFunction) / (4 * Vector3::Dot(v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal));
+
+			ColorRGB kd = (m_Metalness) ? ColorRGB(0, 0, 0) : (ColorRGB(1, 1, 1) - fresnel);
+
+			if (!(bool)m_Metalness)
+			{
+				//return kd * BRDF::Lambert(1.f, m_Albedo) + cookTorrance;
+				return BRDF::Lambert(kd, m_Albedo) + cookTorrance;
+			}
+			else
+			{
+				return cookTorrance;
+			}
 		}
 
 	private:

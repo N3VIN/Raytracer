@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include "Math.h"
+
+
 
 struct SDL_Window;
 struct SDL_Surface;
@@ -8,6 +11,7 @@ struct SDL_Surface;
 namespace dae
 {
 	class Scene;
+
 
 	class Renderer final
 	{
@@ -23,6 +27,7 @@ namespace dae
 		void Render(Scene* pScene) const;
 		bool SaveBufferToImage() const;
 
+
 	private:
 		SDL_Window* m_pWindow{};
 
@@ -32,5 +37,11 @@ namespace dae
 		int m_Width{};
 		int m_Height{};
 		float m_AspectRatio{};
+
+		//
+
+		float GetLambertCosine(const dae::Vector3& normal, const dae::Vector3& lightDirection) const;
+
+
 	};
 }

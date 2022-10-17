@@ -4,7 +4,6 @@
 
 //Project includes
 #include "Renderer.h"
-#include "Math.h"
 #include "Matrix.h"
 #include "Material.h"
 #include "Scene.h"
@@ -83,22 +82,29 @@ void Renderer::Render(Scene* pScene) const
 			{
 				for (const auto& i : lights)
 				{
-					bool isPointVisible{ true };
-					Ray lightRay{ closestHit.origin, LightUtils::GetDirectionToLight(i, closestHit.origin) };
-					lightRay.max = LightUtils::GetDirectionToLight(i, closestHit.origin).Magnitude();
-					isPointVisible = pScene->DoesHit(lightRay);
+					//finalColor = materials[closestHit.materialIndex]->Shade();
 
-					if (isPointVisible)
-					{
-						finalColor = materials[closestHit.materialIndex]->Shade() * 0.5f;
 
-					}
-					else
-					{
-						finalColor = materials[closestHit.materialIndex]->Shade();
+					//bool isPointVisible{ true };
+					//Vector3 startPoint{ closestHit.origin + closestHit.normal * 0.01f };
+					//Vector3 direction{ LightUtils::GetDirectionToLight(i, startPoint) };
+					//Ray lightRay{ startPoint, direction };
+					////Ray lightRay{ closestHit.origin, LightUtils::GetDirectionToLight(i, closestHit.origin) };
+					//lightRay.max = LightUtils::GetDirectionToLight(i, closestHit.origin).Normalize();
+					//isPointVisible = pScene->DoesHit(lightRay);
+
+					//if (isPointVisible)
+					//{
+					//	finalColor = materials[closestHit.materialIndex]->Shade() * 0.5f;
+
+					//}
+					//else
+					//{
+					finalColor += LightUtils::GetRadiance(i, closestHit.origin);
+						//* GetLambertCosine(closestHit.normal, i.direction); //materials[closestHit.materialIndex]->Shade();
 						/*const float scaled_t = closestHit.t / 500.f;
 						finalColor = { scaled_t, scaled_t, scaled_t };*/
-					}
+					//}
 					
 				}
 			}
@@ -120,4 +126,22 @@ void Renderer::Render(Scene* pScene) const
 bool Renderer::SaveBufferToImage() const
 {
 	return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
+}
+
+
+
+float Renderer::GetLambertCosine(const dae::Vector3& normal, const dae::Vector3& lightDirection) const
+{
+	float lambertCosine{};
+	lambertCosine = Vector3::Dot(normal, lightDirection);
+	if (lambertCosine < 0)
+	{
+		return 0.0f;
+	}
+	else
+	{
+		return lambertCosine;
+	}
+
+
 }
