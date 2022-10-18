@@ -95,13 +95,15 @@ void Renderer::Render(Scene* pScene) const
 
 					//if (isPointVisible)
 					//{
-					//	finalColor = materials[closestHit.materialIndex]->Shade() * 0.5f;
+						//finalColor = materials[closestHit.materialIndex]->Shade() * 0.5f;
 
 					//}
 					//else
 					//{
-					finalColor += LightUtils::GetRadiance(i, closestHit.origin);
-						//* GetLambertCosine(closestHit.normal, i.direction); //materials[closestHit.materialIndex]->Shade();
+					finalColor += LightUtils::GetRadiance(i, closestHit.origin)
+						//* Material_Lambert::Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin), rayDirection)
+						* materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin), rayDirection)
+						* GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin)); //materials[closestHit.materialIndex]->Shade();
 						/*const float scaled_t = closestHit.t / 500.f;
 						finalColor = { scaled_t, scaled_t, scaled_t };*/
 					//}
