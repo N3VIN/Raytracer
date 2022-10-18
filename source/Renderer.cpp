@@ -57,8 +57,12 @@ void Renderer::Render(Scene* pScene) const
 				Vector4{x, 0, 0, 0}, 
 				Vector4{0, y, 0, 0}, 
 				Vector4{0, 0, 1, 0}, 
-				Vector4{0, 0, 0, 0} };
+				Vector4{0, 0, 0, 1} };
+
+			Vector4 forwardVec{ x, y, 1, 0 };
+
 			Matrix transformedVector{ cameraToWorld * defaultForwardVector };
+			//Matrix transformedVector{ cameraToWorld * forwardVec };
 
 			//RayDirection calculations.
 			//Vector3 rayDirection{ (x * right) + (y * up) + look};
@@ -117,6 +121,8 @@ void Renderer::Render(Scene* pScene) const
 				static_cast<uint8_t>(finalColor.r * 255),
 				static_cast<uint8_t>(finalColor.g * 255),
 				static_cast<uint8_t>(finalColor.b * 255));
+
+			finalColor = colors::Black;
 		}
 	}
 

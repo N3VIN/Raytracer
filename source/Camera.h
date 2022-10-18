@@ -1,10 +1,12 @@
 #pragma once
 #include <cassert>
+#include <iostream>
 #include <SDL_keyboard.h>
 #include <SDL_mouse.h>
 
 #include "Math.h"
 #include "Timer.h"
+
 
 namespace dae
 {
@@ -14,6 +16,7 @@ namespace dae
 		Vector3 origin{};
 		float fovAngle{};
 		float degrees{};
+
 
 		Vector3 forward{ Vector3::UnitZ };
 		Vector3 up{ Vector3::UnitY };
@@ -81,12 +84,15 @@ namespace dae
 		void Update(Timer* pTimer)
 		{
 			const float deltaTime = pTimer->GetElapsed();
-
+			
 			//Keyboard Input
 			KeyboardMovement(deltaTime);
 
 			//Mouse Input
 			MouseMovement(deltaTime);
+
+			/*right = Vector3::Cross(up, forward).Normalized();
+			up = Vector3::Cross(forward, right).Normalized();*/
 		}
 
 		void updateFovAngle(float angle)
@@ -173,14 +179,15 @@ namespace dae
 				totalYaw += mouseX * (sensitivity * deltaTime);
 				totalPitch += mouseY * (sensitivity * deltaTime);
 
+				std::cout << "Yaw: " << totalYaw << " Pitch: " << totalPitch << std::endl;
 				//UpdateCamera();
 
 				Matrix rotationMatrix = Matrix::CreateRotationX(totalPitch) * Matrix::CreateRotationY(totalYaw);
 				forward = rotationMatrix.TransformVector(Vector3::UnitZ);
 				forward.Normalize();
 
-				right = Vector3::Cross(Vector3::UnitZ, forward).Normalized();
-				up = Vector3::Cross(forward, right).Normalized();
+				/*right = Vector3::Cross(Vector3::UnitZ, forward).Normalized();
+				up = Vector3::Cross(forward, right).Normalized();*/
 			}
 			else if (mouse == SDL_BUTTON(1))
 			{
@@ -189,12 +196,12 @@ namespace dae
 
 				//UpdateCamera();
 
-				Matrix rotationMatrix = Matrix::CreateRotationX(totalPitch) * Matrix::CreateRotationY(totalYaw);
+				/*Matrix rotationMatrix = Matrix::CreateRotationX(totalPitch) * Matrix::CreateRotationY(totalYaw);
 				forward = rotationMatrix.TransformVector(Vector3::UnitZ);
 				forward.Normalize();
 
 				right = Vector3::Cross(Vector3::UnitZ, forward).Normalized();
-				up = Vector3::Cross(forward, right).Normalized();
+				up = Vector3::Cross(forward, right).Normalized();*/
 			}
 
 			

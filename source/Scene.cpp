@@ -269,6 +269,7 @@ namespace dae {
 
 		const unsigned char matLambert_red = AddMaterial(new Material_Lambert{ colors::Red, 1.f });
 		const unsigned char matLambertPhong_Blue = AddMaterial(new Material_LambertPhong{ colors::Blue, 1.f, 1.f, 60.f });
+		//const unsigned char matLambertPhong_Blue = AddMaterial(new Material_Lambert{ colors::Blue, 1.f });
 		const unsigned char matLambert_Yellow = AddMaterial(new Material_Lambert{ colors::Yellow, 1.f });
 
 		AddSphere({ -.75f, 1.f, 0.f }, 1.f, matLambert_red);
