@@ -34,13 +34,9 @@ namespace dae {
 
 		for (const auto& i : m_PlaneGeometries)
 		{
-			if (GeometryUtils::HitTest_Plane(i, ray, closestHit))
+			if (GeometryUtils::HitTest_Plane(i, ray, hit))
 			{
-				if (closestHit.t < hit.t)
-				{
-					hit = closestHit;
-				}
-				else
+				if (hit.t < closestHit.t)
 				{
 					closestHit = hit;
 				}
@@ -52,13 +48,9 @@ namespace dae {
 		for (const auto &i : m_SphereGeometries)
 		{
 			// use the new hit for the intersection.
-			if (GeometryUtils::HitTest_Sphere(i, ray, closestHit))
+			if (GeometryUtils::HitTest_Sphere(i, ray, hit))
 			{
-				if (closestHit.t < hit.t)
-				{
-					hit = closestHit;
-				}
-				else
+				if (hit.t < closestHit.t)
 				{
 					closestHit = hit;
 				}
@@ -225,10 +217,10 @@ namespace dae {
 		m_Camera.updateFovAngle(45.f);
 
 		////default: Material id0 >> SolidColor Material (RED)
-		//constexpr unsigned char matId_Solid_Red = 0;
-		//const unsigned char matId_Solid_Blue = AddMaterial(new Material_SolidColor{ colors::Blue });
+		/*constexpr unsigned char matId_Solid_Red = 0;
+		const unsigned char matId_Solid_Blue = AddMaterial(new Material_SolidColor{ colors::Blue });
 
-		//const unsigned char matId_Solid_Yellow = AddMaterial(new Material_SolidColor{ colors::Yellow });
+		const unsigned char matId_Solid_Yellow = AddMaterial(new Material_SolidColor{ colors::Yellow });*/
 		//const unsigned char matId_Solid_Green = AddMaterial(new Material_SolidColor{ colors::Green });
 		//const unsigned char matId_Solid_Magenta = AddMaterial(new Material_SolidColor{ colors::Magenta });
 
@@ -251,7 +243,7 @@ namespace dae {
 
 		//Spheres
 		/*AddSphere({ -1.75f, 1.f, 0.f }, 0.75f, matCT_GreyRoughMetal);
-		AddSphere({ 0.f, 1.f, 0.f }, 0.75f, matCT_GreyRoughMetal);
+		AddSphere({ 0.f, 1.f, 0.f }, 0.75f, matCT_GreyMediumMetal);
 		AddSphere({ 1.75f, 1.f, 0.f }, 0.75f, matCT_GreySmoothMetal);*/
 		AddSphere({ -1.75f, 3.f, 0.f }, 0.75f, matCT_GreyRoughPlastic);
 		AddSphere({ 0.f, 3.f, 0.f }, 0.75f, matCT_GreyMediumPlastic);
@@ -275,10 +267,10 @@ namespace dae {
 		//m_Camera.origin = { 0.f, 1.f, -5.f };
 		//m_Camera.updateFovAngle(45.f);
 
-		//const unsigned char matLambert_red = AddMaterial(new Material_Lambert{ colors::Red, 1.f });
-		//const unsigned char matLambertPhong_Blue = AddMaterial(new Material_LambertPhong{ colors::Blue, 1.f, 1.f, 60.f });
+		//const unsigned char matLambert_red = AddMaterial(new Material_SolidColor{ colors::Red });
+		//const unsigned char matLambertPhong_Blue = AddMaterial(new Material_SolidColor{ colors::Blue });
 		////const unsigned char matLambertPhong_Blue = AddMaterial(new Material_Lambert{ colors::Blue, 1.f });
-		//const unsigned char matLambert_Yellow = AddMaterial(new Material_Lambert{ colors::Yellow, 1.f });
+		//const unsigned char matLambert_Yellow = AddMaterial(new Material_SolidColor{ colors::Yellow });
 
 		//AddSphere({ -.75f, 1.f, 0.f }, 1.f, matLambert_red);
 		//AddSphere({ .75f, 1.f, 0.f }, 1.f, matLambertPhong_Blue);

@@ -142,7 +142,8 @@ namespace dae
 			}
 			else
 			{
-				return cookTorrance;
+				//return cookTorrance;
+				return fresnel;
 			}
 		}
 

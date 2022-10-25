@@ -60,6 +60,9 @@ void Renderer::Render(Scene* pScene) const
 				Vector4{0, 0, 0, 1} };
 
 			Vector3 forwardVec{ x, y, 1 };
+			if (px > 400) {
+				int k = 0;
+			}
 
 			Matrix transformedVector{ cameraToWorld * defaultForwardVector };
 			//Matrix transformedVector{ cameraToWorld * forwardVec };
@@ -68,7 +71,7 @@ void Renderer::Render(Scene* pScene) const
 			//Vector3 rayDirection{ (x * right) + (y * up) + look};
 			//Vector3 rayDirection{ transformedVector.GetAxisX().x, transformedVector.GetAxisY().y, transformedVector.GetAxisZ().z};
 			Vector3 rayDirection{ cameraToWorld.TransformVector(forwardVec.Normalized())};
-			rayDirection.Normalize();
+			rayDirection.Normalized();
 
 			Ray viewRay{ camera.origin, rayDirection };
 			ColorRGB finalColor{};
@@ -117,7 +120,7 @@ void Renderer::Render(Scene* pScene) const
 				static_cast<uint8_t>(finalColor.g * 255),
 				static_cast<uint8_t>(finalColor.b * 255));
 
-			finalColor = colors::Black;
+			//finalColor = colors::Black;
 		}
 	}
 
@@ -136,10 +139,11 @@ bool Renderer::SaveBufferToImage() const
 float Renderer::GetLambertCosine(const dae::Vector3& normal, const dae::Vector3& lightDirection) const
 {
 	float lambertCosine{};
-	lambertCosine = Vector3::Dot(normal, lightDirection);
+	lambertCosine = Vector3::Dot(normal, lightDirection.Normalized());
 	if (lambertCosine < 0)
 	{
 		return 0.0f;
+		//return lambertCosine;
 	}
 	else
 	{
