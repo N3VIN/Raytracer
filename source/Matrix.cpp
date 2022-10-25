@@ -152,14 +152,16 @@ namespace dae {
 
 	Matrix Matrix::CreateRotation(const Vector3& r)
 	{
-		//todo W1
-		assert(false && "Not Implemented Yet");
-		return {};
+		return CreateRotation(r.x, r.y, r.z);
 	}
 
 	Matrix Matrix::CreateRotation(float pitch, float yaw, float roll)
 	{
-		return CreateRotation({ pitch, yaw, roll });
+		return Matrix{
+			Vector4{ cos(pitch), 0, sin(pitch), 0},
+			Vector4{ sin(pitch) * sin(yaw), cos(yaw), -sin(yaw) * cos(pitch), 0},
+			Vector4{ -cos(yaw) * sin(pitch), sin(yaw), cos(yaw) * cos(pitch), 0},
+			Vector4{ 0, 0, 0, 1 } };
 	}
 
 	Matrix Matrix::CreateScale(float sx, float sy, float sz)

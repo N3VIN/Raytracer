@@ -59,14 +59,15 @@ void Renderer::Render(Scene* pScene) const
 				Vector4{0, 0, 1, 0}, 
 				Vector4{0, 0, 0, 1} };
 
-			Vector4 forwardVec{ x, y, 1, 0 };
+			Vector3 forwardVec{ x, y, 1 };
 
 			Matrix transformedVector{ cameraToWorld * defaultForwardVector };
 			//Matrix transformedVector{ cameraToWorld * forwardVec };
 
 			//RayDirection calculations.
 			//Vector3 rayDirection{ (x * right) + (y * up) + look};
-			Vector3 rayDirection{ transformedVector.GetAxisX().x, transformedVector.GetAxisY().y, transformedVector.GetAxisZ().z};
+			//Vector3 rayDirection{ transformedVector.GetAxisX().x, transformedVector.GetAxisY().y, transformedVector.GetAxisZ().z};
+			Vector3 rayDirection{ cameraToWorld.TransformVector(forwardVec.Normalized())};
 			rayDirection.Normalize();
 
 			Ray viewRay{ camera.origin, rayDirection };
@@ -74,11 +75,6 @@ void Renderer::Render(Scene* pScene) const
 
 			HitRecord closestHit{};
 
-			/*Sphere testSphere{ {0.0f, 0.0f, 100.0f}, 50.0f, 0 };
-			GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);
-
-			Plane testPlane{ {0.0f, -50.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0 };
-			GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);*/
 
 			pScene->GetClosestHit(viewRay, closestHit);
 
@@ -105,8 +101,7 @@ void Renderer::Render(Scene* pScene) const
 					//else
 					//{
 					finalColor += LightUtils::GetRadiance(i, closestHit.origin)
-						//* Material_Lambert::Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin), rayDirection)
-						* materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin), rayDirection)
+						* materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection)
 						* GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin)); //materials[closestHit.materialIndex]->Shade();
 						/*const float scaled_t = closestHit.t / 500.f;
 						finalColor = { scaled_t, scaled_t, scaled_t };*/

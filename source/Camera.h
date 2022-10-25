@@ -52,7 +52,7 @@ namespace dae
 
 		Matrix CalculateCameraToWorld()
 		{
-			right = Vector3::Cross(up, forward).Normalized();
+			right = Vector3::Cross(Vector3::UnitY, forward).Normalized();
 			up = Vector3::Cross(forward, right).Normalized();
 
 			Matrix ONB{};
@@ -170,21 +170,26 @@ namespace dae
 		{
 
 			int mouseX, mouseY;
-			float sensitivity{ 1.f };
+			float sensitivity{ 0.5f };
 			auto mouse = SDL_GetRelativeMouseState(&mouseX, &mouseY);
 
 
 			if (mouse == SDL_BUTTON(3))
 			{
-				totalYaw += mouseX * (sensitivity * deltaTime);
-				totalPitch += mouseY * (sensitivity * deltaTime);
+				totalYaw -= mouseY * (sensitivity * deltaTime);
+				totalPitch -= mouseX * (sensitivity * deltaTime);
 
 				std::cout << "Yaw: " << totalYaw << " Pitch: " << totalPitch << std::endl;
 				//UpdateCamera();
 
-				Matrix rotationMatrix = Matrix::CreateRotationX(totalPitch) * Matrix::CreateRotationY(totalYaw);
+				//Matrix rotationMatrix = Matrix::CreateRotationX(totalPitch) * Matrix::CreateRotationY(totalYaw);
+				/*Matrix rotationMatrix = Matrix::CreateRotation(totalPitch, totalYaw, 0.f);
 				forward = rotationMatrix.TransformVector(Vector3::UnitZ);
-				forward.Normalize();
+				forward.Normalize();*/
+				/*right = rotationMatrix.TransformVector(Vector3::UnitX);
+				right.Normalize();
+				up = rotationMatrix.TransformVector(Vector3::UnitY);
+				up.Normalize();*/
 
 				/*right = Vector3::Cross(Vector3::UnitZ, forward).Normalized();
 				up = Vector3::Cross(forward, right).Normalized();*/
@@ -204,7 +209,18 @@ namespace dae
 				up = Vector3::Cross(forward, right).Normalized();*/
 			}
 
-			
+			/*Matrix rotationMatrix = Matrix::CreateRotation(totalPitch, totalYaw, 0.f);
+			forward = rotationMatrix.TransformVector(Vector3::UnitZ);
+			forward.Normalize();
+			right = rotationMatrix.TransformVector(Vector3::UnitX);
+			right.Normalize();
+			up = rotationMatrix.TransformVector(Vector3::UnitY);
+			up.Normalize();*/
+
+			Matrix rotationMatrix = Matrix::CreateRotation(totalPitch, totalYaw, 0.f);
+			forward = rotationMatrix.TransformVector(Vector3::UnitZ);
+			forward.Normalize();
+
 		}
 
 		void UpdateCamera()
