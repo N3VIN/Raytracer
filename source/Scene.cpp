@@ -56,6 +56,32 @@ namespace dae {
 				}
 			}	
 		}
+
+		//..
+
+		for (const auto& i : m_Triangles)
+		{
+			// use the new hit for the intersection.
+			if (GeometryUtils::HitTest_Triangle(i, ray, hit))
+			{
+				if (hit.t < closestHit.t)
+				{
+					closestHit = hit;
+				}
+			}
+		}
+
+		for (const auto& i : m_TriangleMeshGeometries)
+		{
+			// use the new hit for the intersection.
+			if (GeometryUtils::HitTest_TriangleMesh(i, ray, hit))
+			{
+				if (hit.t < closestHit.t)
+				{
+					closestHit = hit;
+				}
+			}
+		}
 		
 	}
 
@@ -77,6 +103,16 @@ namespace dae {
 		for (const auto& i : m_SphereGeometries)
 		{
 			if (GeometryUtils::HitTest_Sphere(i, ray, tempHitRecord, true))
+			{
+				return true;
+			}
+		}
+
+		//..
+
+		for (const auto& i : m_TriangleMeshGeometries)
+		{
+			if (GeometryUtils::HitTest_TriangleMesh(i, ray, tempHitRecord, true))
 			{
 				return true;
 			}
@@ -233,18 +269,18 @@ namespace dae {
 
 		const auto matLambert_GreyBlue = AddMaterial(new Material_Lambert({ 0.49f, 0.57f, 0.57f }, 1.f));
 
-		const auto matLambertPhong1 = AddMaterial(new Material_LambertPhong{ colors::Blue, 0.5f, 0.5f, 3.f });
+		/*const auto matLambertPhong1 = AddMaterial(new Material_LambertPhong{ colors::Blue, 0.5f, 0.5f, 3.f });
 		const auto matLambertPhong2 = AddMaterial(new Material_LambertPhong{ colors::Blue, 0.5f, 0.5f, 15.f });
-		const auto matLambertPhong3 = AddMaterial(new Material_LambertPhong{ colors::Blue, 0.5f, 0.5f, 50.f });
+		const auto matLambertPhong3 = AddMaterial(new Material_LambertPhong{ colors::Blue, 0.5f, 0.5f, 50.f });*/
 
-		AddSphere({ -1.75f, 1.f, 0.f }, 0.75f, matLambertPhong1);
+		/*AddSphere({ -1.75f, 1.f, 0.f }, 0.75f, matLambertPhong1);
 		AddSphere({ 0.f, 1.f, 0.f }, 0.75f, matLambertPhong2);
-		AddSphere({ 1.75f, 1.f, 0.f }, 0.75f, matLambertPhong3);
+		AddSphere({ 1.75f, 1.f, 0.f }, 0.75f, matLambertPhong3);*/
 
 		//Spheres
-		/*AddSphere({ -1.75f, 1.f, 0.f }, 0.75f, matCT_GreyRoughMetal);
+		AddSphere({ -1.75f, 1.f, 0.f }, 0.75f, matCT_GreyRoughMetal);
 		AddSphere({ 0.f, 1.f, 0.f }, 0.75f, matCT_GreyMediumMetal);
-		AddSphere({ 1.75f, 1.f, 0.f }, 0.75f, matCT_GreySmoothMetal);*/
+		AddSphere({ 1.75f, 1.f, 0.f }, 0.75f, matCT_GreySmoothMetal);
 		AddSphere({ -1.75f, 3.f, 0.f }, 0.75f, matCT_GreyRoughPlastic);
 		AddSphere({ 0.f, 3.f, 0.f }, 0.75f, matCT_GreyMediumPlastic);
 		AddSphere({ 1.75f, 3.f, 0.f }, 0.75f, matCT_GreySmoothPlastic);
@@ -280,6 +316,60 @@ namespace dae {
 		//AddPointLight({ 0.f, 5.f, 5.f }, 25.f, colors::White);
 		//AddPointLight({ 0.f, 2.5f, -5.f }, 25.f, colors::White);
 
+	}
+#pragma endregion
+
+#pragma region SCENE W4
+	void Scene_W4::Initialize()
+	{
+		m_Camera.origin = { 0.f, 1.f, -5.f };
+		m_Camera.updateFovAngle(45.f);
+
+		//Materials
+		const auto matLambert_GreyBlue = AddMaterial(new Material_Lambert({ 0.49f, 0.57f, 0.57f }, 1.f));
+		const auto matLambert_White = AddMaterial(new Material_Lambert(colors::White, 1.f));
+
+		//Plane
+		AddPlane({ 0.f, 0.f, 10.f }, { 0.f, 0.f, -1.f }, matLambert_GreyBlue);
+		AddPlane({ 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f }, matLambert_GreyBlue);
+		AddPlane({ 0.f, 10.f, 0.f }, { 0.f, -1.f, 0.f }, matLambert_GreyBlue);
+		AddPlane({ 5.f, 0.f, 0.f }, { -1.f, 0.f, 0.f }, matLambert_GreyBlue);
+		AddPlane({ -5.f, 0.f, 0.f }, { 1.f, 0.f, 0.f }, matLambert_GreyBlue);
+
+		//Triangle (Temp)
+		/*auto triangle = Triangle{ { -.75f, .5f, .0f}, {-.75, 2.f, .0f}, {.75, .5f, 0.f} };
+		triangle.cullMode = TriangleCullMode::NoCulling;
+		triangle.materialIndex = matLambert_White;
+
+		m_Triangles.emplace_back(triangle);*/
+
+		//TriangleMesh
+		pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
+		pMesh->positions = { {-.75f, -1.f, .0f}, {-.75f, 1.f, .0f}, {.75f, 1.f, 1.f}, {.75f, -1.f, 0.f} };
+		pMesh->indices = {
+			0, 1, 2,
+			0, 2, 3
+		};
+
+		pMesh->CalculateNormals();
+
+		pMesh->Translate({ 0.f, 1.5f, 0.f });
+		//pMesh->RotateY(45);
+
+		pMesh->UpdateTransforms();
+
+		//Light
+		AddPointLight({ 0.f, 5.f, 5.f }, 50.f, ColorRGB{ 1.f, 0.61f, 0.45f });
+		AddPointLight({ -2.5f, 5.f, -5.f }, 70.f, ColorRGB{ 1.f, 0.8f, 0.45f });
+		AddPointLight({ 2.5f, 2.5f, -5.f }, 50.f, ColorRGB{ 0.34f, 0.47f, 0.68f });
+
+	}
+	void Scene_W4::Update(Timer* pTimer)
+	{
+		Scene::Update(pTimer);
+
+		pMesh->RotateY(PI_DIV_2 * pTimer->GetTotal());
+		pMesh->UpdateTransforms();
 	}
 #pragma endregion
 }

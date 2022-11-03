@@ -122,29 +122,35 @@ namespace dae
 			{
 				kd = RGBColor{ 1,1,1 } - fresnel;
 			}*/
-			Vector3 halfVector{ (v + l) / (v + l).Magnitude() };
+			Vector3 halfVector{ (-v + l) / (-v + l).Magnitude() };
 
 			ColorRGB fresnel{};
-			fresnel = BRDF::FresnelFunction_Schlick(halfVector, v, m_Albedo);
+			fresnel = BRDF::FresnelFunction_Schlick(halfVector, -v, m_Albedo);
 
 			ColorRGB cookTorrance{};
 			float normalDistribution{ BRDF::NormalDistribution_GGX(hitRecord.normal, halfVector, m_Roughness) };
-			float geometryFunction{ BRDF::GeometryFunction_Smith(hitRecord.normal, v, l, m_Roughness) };
+			float geometryFunction{ BRDF::GeometryFunction_Smith(hitRecord.normal, -v, l, m_Roughness) };
 
-			cookTorrance = (fresnel * normalDistribution * geometryFunction) / (4 * Vector3::Dot(v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal));
+			cookTorrance = (fresnel * normalDistribution * geometryFunction) / (4 * Vector3::Dot(-v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal));
 
 			ColorRGB kd = (m_Metalness) ? ColorRGB(0, 0, 0) : (ColorRGB(1, 1, 1) - fresnel);
 
-			if (!(bool)m_Metalness)
-			{
-				//return kd * BRDF::Lambert(1.f, m_Albedo) + cookTorrance;
-				return BRDF::Lambert(kd, m_Albedo) + cookTorrance;
-			}
-			else
-			{
-				//return cookTorrance;
-				return fresnel;
-			}
+			//if (!(bool)m_Metalness)
+			//{
+			//	//return kd * BRDF::Lambert(1.f, m_Albedo) + cookTorrance;
+			//	return BRDF::Lambert(kd, m_Albedo) + cookTorrance;
+			//}
+			//else
+			//{
+			//	//return cookTorrance;
+			//	return BRDF::Lambert(1.0, m_Albedo) + cookTorrance;
+			//}
+
+			return BRDF::Lambert(kd, m_Albedo) + cookTorrance;
+
+
+			//return fresnel;
+
 		}
 
 	private:

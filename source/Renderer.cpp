@@ -60,9 +60,6 @@ void Renderer::Render(Scene* pScene) const
 				Vector4{0, 0, 0, 1} };
 
 			Vector3 forwardVec{ x, y, 1 };
-			if (px > 400) {
-				int k = 0;
-			}
 
 			Matrix transformedVector{ cameraToWorld * defaultForwardVector };
 			//Matrix transformedVector{ cameraToWorld * forwardVec };

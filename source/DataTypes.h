@@ -72,6 +72,7 @@ namespace dae
 			const Vector3 edgeV0V1 = v1 - v0;
 			const Vector3 edgeV0V2 = v2 - v0;
 			normal = Vector3::Cross(edgeV0V1, edgeV0V2).Normalized();
+			center = (v0 + v1 + v2) / 3.f;
 		}
 
 		Vector3 v0{};
@@ -79,6 +80,7 @@ namespace dae
 		Vector3 v2{};
 
 		Vector3 normal{};
+		Vector3 center{};
 
 		TriangleCullMode cullMode{};
 		unsigned char materialIndex{};
@@ -95,6 +97,13 @@ namespace dae
 
 			//Update Transforms
 			UpdateTransforms();
+
+			for (auto i : positions)
+			{
+				center += i;
+			}
+			center = { center.x / positions.size(), center.y / positions.size(), center.z / positions.size() };
+
 		}
 
 		TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices, const std::vector<Vector3>& _normals, TriangleCullMode _cullMode) :
@@ -107,6 +116,8 @@ namespace dae
 		std::vector<Vector3> normals{};
 		std::vector<int> indices{};
 		unsigned char materialIndex{};
+		Vector3 center;
+
 
 		TriangleCullMode cullMode{TriangleCullMode::BackFaceCulling};
 
@@ -124,6 +135,7 @@ namespace dae
 
 		void RotateY(float yaw)
 		{
+			float radians{ TO_RADIANS * yaw };
 			rotationTransform = Matrix::CreateRotationY(yaw);
 		}
 
@@ -153,20 +165,50 @@ namespace dae
 
 		void CalculateNormals()
 		{
-			assert(false && "No Implemented Yet!");
+			normals.clear();
+			Vector3 normal{};
+			for (size_t i = 0; i < indices.size(); i += 3)
+			{
+				const Vector3 v0 = positions[indices[i]];
+				const Vector3 v1 = positions[indices[i + 1]];
+				const Vector3 v2 = positions[indices[i + 2]];
+
+				Vector3 a{ v1 - v0 };
+				Vector3 b{ v2 - v0 };
+				normal = Vector3::Cross(a, b).Normalized();
+				normals.push_back(normal);
+			}
 		}
 
 		void UpdateTransforms()
 		{
-			assert(false && "No Implemented Yet!");
-			//Calculate Final Transform 
-			//const auto finalTransform = ...
+			transformedPositions.clear();
+			transformedNormals.clear();
 
-			//Transform Positions (positions > transformedPositions)
-			//...
+			//const auto finalTransform{ translationTransform * rotationTransform * scaleTransform };
+			const auto finalTransform{ translationTransform * rotationTransform };
 
-			//Transform Normals (normals > transformedNormals)
-			//...
+			for (size_t i = 0; i < positions.size(); i++)
+			{
+				transformedPositions.reserve(positions.size());
+				/*positions[i] = positions[i] - center;
+				transformedPositions.emplace_back(finalTransform.TransformVector(positions[i]) + center);*/
+				transformedPositions.emplace_back(finalTransform.TransformVector(positions[i]));
+
+				//transformedPositions.emplace_back() = positions[i];
+			}
+
+			//CalculateNormals;
+
+			for (size_t i = 0; i < normals.size(); i++)
+			{
+				transformedNormals.reserve(normals.size());
+				////transformedNormals[i] = positions[i] - center;
+				////transformedNormals[i] = finalTransform.TransformVector(TransformedNormals[i]) + Vector3{ center };
+				transformedNormals.emplace_back( finalTransform.TransformVector(normals[i]));
+
+				//transformedNormals.emplace_back() = normals[i];
+			}
 		}
 	};
 #pragma endregion
@@ -207,11 +249,6 @@ namespace dae
 		Ray& operator=(const Ray&) = default;
 		Ray& operator=(Ray&&) noexcept = default;
 
-		// Functions
-		/*Vector3 at(float t) const
-		{
-			return origin + (direction * t);
-		}*/
 	};
 
 	struct HitRecord

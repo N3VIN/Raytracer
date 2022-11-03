@@ -179,34 +179,13 @@ namespace dae
 				totalYaw -= mouseY * (sensitivity * deltaTime);
 				totalPitch -= mouseX * (sensitivity * deltaTime);
 
-				std::cout << "Yaw: " << totalYaw << " Pitch: " << totalPitch << std::endl;
-				//UpdateCamera();
 
-				//Matrix rotationMatrix = Matrix::CreateRotationX(totalPitch) * Matrix::CreateRotationY(totalYaw);
-				/*Matrix rotationMatrix = Matrix::CreateRotation(totalPitch, totalYaw, 0.f);
-				forward = rotationMatrix.TransformVector(Vector3::UnitZ);
-				forward.Normalize();*/
-				/*right = rotationMatrix.TransformVector(Vector3::UnitX);
-				right.Normalize();
-				up = rotationMatrix.TransformVector(Vector3::UnitY);
-				up.Normalize();*/
-
-				/*right = Vector3::Cross(Vector3::UnitZ, forward).Normalized();
-				up = Vector3::Cross(forward, right).Normalized();*/
 			}
 			else if (mouse == SDL_BUTTON(1))
 			{
 				origin += forward * (mouseY * (sensitivity * deltaTime));
 				totalYaw += mouseX * (sensitivity * deltaTime);
 
-				//UpdateCamera();
-
-				/*Matrix rotationMatrix = Matrix::CreateRotationX(totalPitch) * Matrix::CreateRotationY(totalYaw);
-				forward = rotationMatrix.TransformVector(Vector3::UnitZ);
-				forward.Normalize();
-
-				right = Vector3::Cross(Vector3::UnitZ, forward).Normalized();
-				up = Vector3::Cross(forward, right).Normalized();*/
 			}
 
 			/*Matrix rotationMatrix = Matrix::CreateRotation(totalPitch, totalYaw, 0.f);

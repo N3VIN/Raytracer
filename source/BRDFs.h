@@ -1,6 +1,8 @@
 #pragma once
 #include <cassert>
 #include "Math.h"
+#include <algorithm>
+
 
 namespace dae
 {
@@ -37,7 +39,7 @@ namespace dae
 		{
 			Vector3 reflect{ Vector3::Reflect(l, n) };
 			//Vector3 reflect{ l - (2 * (Vector3::Dot(n, l)) * n)};
-			float cosAlpha{ Vector3::Dot(reflect, v) };
+			float cosAlpha{ std::max(Vector3::Dot(reflect, v), 0.f) };
 			float phong{ ks * (pow(cosAlpha, exp)) };
 			return ColorRGB(phong, phong, phong);
 		}

@@ -111,9 +111,74 @@ namespace dae
 		//TRIANGLE HIT-TESTS
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			//todo W5
-			assert(false && "No Implemented Yet!");
-			return false;
+			float dotNV{ Vector3::Dot(triangle.normal, ray.direction) };
+			if (dotNV == 0)
+			{
+				return false;
+			}
+
+			float t{ Vector3::Dot((triangle.center - ray.origin), triangle.normal) / Vector3::Dot(ray.direction, triangle.normal) };
+
+			if (t < ray.min || t > ray.max)
+			{
+				return false;
+			}
+
+			Vector3 p{ ray.origin + (t * ray.direction) };
+
+			Vector3 edge{};
+			Vector3 pointToSide{};
+
+			// edge 1
+			edge = triangle.v1 - triangle.v0;
+			pointToSide = p - triangle.v0;
+
+			if (Vector3::Dot(triangle.normal, Vector3::Cross(edge, pointToSide)) < 0)
+			{
+				return false;
+			}
+
+			// edge 2
+			edge = triangle.v2 - triangle.v1;
+			pointToSide = p - triangle.v1;
+
+			if (Vector3::Dot(triangle.normal, Vector3::Cross(edge, pointToSide)) < 0)
+			{
+				return false;
+			}
+
+			// edge 3
+			edge = triangle.v0 - triangle.v2;
+			pointToSide = p - triangle.v2;
+
+			if (Vector3::Dot(triangle.normal, Vector3::Cross(edge, pointToSide)) < 0)
+			{
+				return false;
+			}
+
+			switch (triangle.cullMode)
+			{
+			case TriangleCullMode::BackFaceCulling:
+				if (Vector3::Dot(triangle.normal, ray.direction) > 0)
+				{
+					return false;
+				}
+				break;
+			case TriangleCullMode::FrontFaceCulling:
+				if (Vector3::Dot(triangle.normal, ray.direction) < 0)
+				{
+					return false;
+				}
+				break;
+			case TriangleCullMode::NoCulling:
+				break;
+			}
+
+			hitRecord.origin = p;
+			hitRecord.didHit = true;
+			hitRecord.t = t;
+			hitRecord.normal = triangle.normal;
+			return true;
 		}
 
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray)
@@ -125,9 +190,28 @@ namespace dae
 #pragma region TriangeMesh HitTest
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			//todo W5
-			assert(false && "No Implemented Yet!");
-			return false;
+			bool returnBool{ false };
+			int normalCount{};
+			for (size_t i = 0; i < mesh.indices.size(); i += 3)
+			{
+				const Vector3 v0 = mesh.transformedPositions[mesh.indices[i]];
+				const Vector3 v1 = mesh.transformedPositions[mesh.indices[i + 1]];
+				const Vector3 v2 = mesh.transformedPositions[mesh.indices[i + 2]];
+
+				const Vector3 normal = mesh.transformedNormals[mesh.indices[i]];
+				/*const Vector3 n1 = mesh.transformedNormals[mesh.indices[i + 1]];
+				const Vector3 n2 = mesh.transformedNormals[mesh.indices[i + 2]];*/
+
+				Triangle triangle{ v0, v1, v2, normal };
+				triangle.cullMode = TriangleCullMode::NoCulling;
+
+				//if (triangle.Intersect(ray, hit))
+				if (HitTest_Triangle(triangle, ray, hitRecord))
+				{
+					returnBool = true;
+				}
+			}
+			return returnBool;
 		}
 
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray)
