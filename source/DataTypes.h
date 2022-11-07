@@ -98,17 +98,13 @@ namespace dae
 			//Update Transforms
 			UpdateTransforms();
 
-			for (auto i : positions)
-			{
-				center += i;
-			}
-			center = { center.x / positions.size(), center.y / positions.size(), center.z / positions.size() };
-
+		
 		}
 
 		TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices, const std::vector<Vector3>& _normals, TriangleCullMode _cullMode) :
 			positions(_positions), indices(_indices), normals(_normals), cullMode(_cullMode)
 		{
+			
 			UpdateTransforms();
 		}
 
@@ -135,7 +131,6 @@ namespace dae
 
 		void RotateY(float yaw)
 		{
-			float radians{ TO_RADIANS * yaw };
 			rotationTransform = Matrix::CreateRotationY(yaw);
 		}
 
@@ -185,14 +180,12 @@ namespace dae
 			transformedPositions.clear();
 			transformedNormals.clear();
 
-			//const auto finalTransform{ translationTransform * rotationTransform * scaleTransform };
-			const auto finalTransform{ translationTransform * rotationTransform };
+			const auto finalTransform{ translationTransform * rotationTransform * scaleTransform };
+			//const auto finalTransform{ translationTransform * rotationTransform };
 
+			transformedPositions.reserve(positions.size());
 			for (size_t i = 0; i < positions.size(); i++)
 			{
-				transformedPositions.reserve(positions.size());
-				/*positions[i] = positions[i] - center;
-				transformedPositions.emplace_back(finalTransform.TransformVector(positions[i]) + center);*/
 				transformedPositions.emplace_back(finalTransform.TransformVector(positions[i]));
 
 				//transformedPositions.emplace_back() = positions[i];
@@ -200,11 +193,9 @@ namespace dae
 
 			//CalculateNormals;
 
+			transformedNormals.reserve(normals.size());
 			for (size_t i = 0; i < normals.size(); i++)
 			{
-				transformedNormals.reserve(normals.size());
-				////transformedNormals[i] = positions[i] - center;
-				////transformedNormals[i] = finalTransform.TransformVector(TransformedNormals[i]) + Vector3{ center };
 				transformedNormals.emplace_back( finalTransform.TransformVector(normals[i]));
 
 				//transformedNormals.emplace_back() = normals[i];

@@ -30,16 +30,6 @@ void Renderer::Render(Scene* pScene) const
 
 	float fov = camera.fovAngle;
 
-	// Testing the dot and cross product.
-	//float dotResult{};
-	//dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitX);
-	//dotResult = Vector3::Dot(Vector3::UnitX, -Vector3::UnitX);
-	//dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitY);
-
-	//Vector3 crossResult{};
-	//crossResult = Vector3::Cross(Vector3::UnitZ, Vector3::UnitX);
-	//crossResult = Vector3::Cross(Vector3::UnitX, Vector3::UnitZ);
-
 	Vector3 right{Vector3::UnitX}, up{Vector3::UnitY}, look{Vector3::UnitZ};
 
 	//Look at matrix.
@@ -53,16 +43,7 @@ void Renderer::Render(Scene* pScene) const
 			float x{ float((2 * ((px + 0.5f) / m_Width) - 1)) * (fov * m_AspectRatio) };
 			float y{ float(1 - 2 * ((py + 0.5f) / m_Height)) * fov };
 
-			Matrix defaultForwardVector{ 
-				Vector4{x, 0, 0, 0}, 
-				Vector4{0, y, 0, 0}, 
-				Vector4{0, 0, 1, 0}, 
-				Vector4{0, 0, 0, 1} };
-
 			Vector3 forwardVec{ x, y, 1 };
-
-			Matrix transformedVector{ cameraToWorld * defaultForwardVector };
-			//Matrix transformedVector{ cameraToWorld * forwardVec };
 
 			//RayDirection calculations.
 			//Vector3 rayDirection{ (x * right) + (y * up) + look};
@@ -100,13 +81,24 @@ void Renderer::Render(Scene* pScene) const
 					//}
 					//else
 					//{
-					finalColor += LightUtils::GetRadiance(i, closestHit.origin)
-						* materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection)
-						* GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin)); //materials[closestHit.materialIndex]->Shade();
-						/*const float scaled_t = closestHit.t / 500.f;
-						finalColor = { scaled_t, scaled_t, scaled_t };*/
-					//}
-					
+					switch (m_CurrentLightingMode)
+					{
+					case dae::Renderer::LightingMode::ObservedArea:
+						finalColor += ColorRGB({1.f, 1.f, 1.f}) * GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin));
+						break;
+					case dae::Renderer::LightingMode::Radiance:
+						finalColor += LightUtils::GetRadiance(i, closestHit.origin);
+						break;
+					case dae::Renderer::LightingMode::BRDF:
+						finalColor += materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection);
+						break;
+					case dae::Renderer::LightingMode::Combined:
+						finalColor += LightUtils::GetRadiance(i, closestHit.origin)
+							* materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection)
+							* GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin));
+						break;				
+					}
+	
 				}
 			}
 			//Update Color in Buffer
@@ -129,6 +121,18 @@ void Renderer::Render(Scene* pScene) const
 bool Renderer::SaveBufferToImage() const
 {
 	return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
+}
+
+void dae::Renderer::CycleLightingMode()
+{
+	int count{ static_cast<int>(m_CurrentLightingMode) };
+	count++;
+	if (count > 3)
+	{
+		count = 0;
+	}
+	LightingMode castEnum = static_cast<LightingMode>(count);
+	m_CurrentLightingMode = castEnum;
 }
 
 

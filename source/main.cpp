@@ -34,6 +34,7 @@ int main(int argc, char* args[])
 
 	SDL_Window* pWindow = SDL_CreateWindow(
 		"RayTracer - **Nevin Amarendranath**",
+		//"Engine",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		width, height, 0);
@@ -47,8 +48,8 @@ int main(int argc, char* args[])
 
 	//const auto pScene = new Scene_W1();
 	//const auto pScene = new Scene_W2();
-	//const auto pScene = new Scene_W3();
-	const auto pScene = new Scene_W4();
+	const auto pScene = new Scene_W3();
+	//const auto pScene = new Scene_W4();
 	pScene->Initialize();
 
 	//Start loop
@@ -68,12 +69,24 @@ int main(int argc, char* args[])
 				isLooping = false;
 				break;
 			case SDL_KEYUP:
-				if(e.key.keysym.scancode == SDL_SCANCODE_X)
+				if (e.key.keysym.scancode == SDL_SCANCODE_X)
 					takeScreenshot = true;
+
+				switch (e.key.keysym.sym)
+				{
+				case SDLK_F3:
+				{
+					pRenderer->CycleLightingMode();
+				}
 				break;
+				case SDLK_F2:
+				{
+					pRenderer->ToggleShadows();
+				}
+				break;
+				}
 			}
 		}
-
 		//--------- Update ---------
 		pScene->Update(pTimer);
 

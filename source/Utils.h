@@ -198,15 +198,14 @@ namespace dae
 				const Vector3 v1 = mesh.transformedPositions[mesh.indices[i + 1]];
 				const Vector3 v2 = mesh.transformedPositions[mesh.indices[i + 2]];
 
-				const Vector3 normal = mesh.transformedNormals[mesh.indices[i]];
-				/*const Vector3 n1 = mesh.transformedNormals[mesh.indices[i + 1]];
-				const Vector3 n2 = mesh.transformedNormals[mesh.indices[i + 2]];*/
-
+				const Vector3 normal = mesh.transformedNormals[normalCount];
+				
+				++normalCount;
 				Triangle triangle{ v0, v1, v2, normal };
-				triangle.cullMode = TriangleCullMode::NoCulling;
+				//Triangle triangle{ v0, v1, v2 }; // expensive but stil broke with different results.
+				triangle.cullMode = mesh.cullMode;
 
-				//if (triangle.Intersect(ray, hit))
-				if (HitTest_Triangle(triangle, ray, hitRecord))
+				if (HitTest_Triangle(triangle, ray, hitRecord, ignoreHitRecord))
 				{
 					returnBool = true;
 				}
@@ -233,7 +232,7 @@ namespace dae
 		inline ColorRGB GetRadiance(const Light& light, const Vector3& target)
 		{
 			//return  light.color * (light.intensity / Vector3::Dot(light.origin - target, light.origin - target));
-			return  light.color * light.intensity / pow((light.origin - target).Magnitude(), 2);
+			return  light.color * light.intensity / static_cast<float>( pow((light.origin - target).Magnitude(), 2));
 
 		}
 	}
