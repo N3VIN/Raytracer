@@ -92,6 +92,12 @@ namespace dae
 		TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices, TriangleCullMode _cullMode):
 		positions(_positions), indices(_indices), cullMode(_cullMode)
 		{
+			/*for (const auto &i : positions)
+			{
+				center += Vector3{ i };
+			}
+			center = { center.x / positions.size(), center.y / positions.size(), center.z / positions.size() };*/
+
 			//Calculate Normals
 			CalculateNormals();
 
@@ -104,7 +110,12 @@ namespace dae
 		TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices, const std::vector<Vector3>& _normals, TriangleCullMode _cullMode) :
 			positions(_positions), indices(_indices), normals(_normals), cullMode(_cullMode)
 		{
-			
+			/*for (const auto &i : positions)
+			{
+				center += Vector3{ i };
+			}
+			center = { center.x / positions.size(), center.y / positions.size(), center.z / positions.size() };*/
+
 			UpdateTransforms();
 		}
 
@@ -186,12 +197,13 @@ namespace dae
 			transformedPositions.reserve(positions.size());
 			for (size_t i = 0; i < positions.size(); i++)
 			{
-				transformedPositions.emplace_back(finalTransform.TransformVector(positions[i]));
+				//positions[i] = positions[i] - center;
+				//transformedPositions.emplace_back(finalTransform.TransformPoint(positions[i]) + center);
+
+				transformedPositions.emplace_back(finalTransform.TransformPoint(positions[i]));
 
 				//transformedPositions.emplace_back() = positions[i];
 			}
-
-			//CalculateNormals;
 
 			transformedNormals.reserve(normals.size());
 			for (size_t i = 0; i < normals.size(); i++)

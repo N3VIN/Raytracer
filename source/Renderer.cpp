@@ -30,7 +30,7 @@ void Renderer::Render(Scene* pScene) const
 
 	float fov = camera.fovAngle;
 
-	Vector3 right{Vector3::UnitX}, up{Vector3::UnitY}, look{Vector3::UnitZ};
+	//Vector3 right{Vector3::UnitX}, up{Vector3::UnitY}, look{Vector3::UnitZ};
 
 	//Look at matrix.
 	const Matrix cameraToWorld{ camera.CalculateCameraToWorld() };

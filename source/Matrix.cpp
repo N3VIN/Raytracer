@@ -105,24 +105,18 @@ namespace dae {
 	Matrix Matrix::CreateTranslation(float x, float y, float z)
 	{
 		return Matrix{
-			Vector4{ 1, 0, 0, x },
-			Vector4{ 0, 1, 0, y },
-			Vector4{ 0, 0, 1, z },
-			Vector4{ 0, 0, 0, 1 } };
+			Vector4{ 1, 0, 0, 0 },
+			Vector4{ 0, 1, 0, 0 },
+			Vector4{ 0, 0, 1, 0 },
+			Vector4{ x, y, z, 1 } 
+		};
 	}
 
 	Matrix Matrix::CreateTranslation(const Vector3& t)
 	{
-		//return { Vector3::UnitX, Vector3::UnitY, Vector3::UnitZ, t };
+		return { Vector3::UnitX, Vector3::UnitY, Vector3::UnitZ, t };
 
 		//return CreateTranslation(t.x, t.y, t.z);
-
-		return Matrix{
-			Vector4{ 1, 0, 0, t.x },
-			Vector4{ 0, 1, 0, t.y },
-			Vector4{ 0, 0, 1, t.z },
-			Vector4{ 0, 0, 0, 1 } };
-
 	}
 
 	Matrix Matrix::CreateRotationX(float pitch)
