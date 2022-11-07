@@ -51,6 +51,7 @@ int main(int argc, char* args[])
 	//const auto pScene = new Scene_W3();
 	//const auto pScene = new Scene_W4();
 	const auto pScene = new Scene_W4_ReferenceScene();
+	//const auto pScene = new Scene_W4_Bunny();
 	pScene->Initialize();
 
 	//Start loop

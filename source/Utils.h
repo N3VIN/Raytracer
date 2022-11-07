@@ -227,21 +227,56 @@ namespace dae
 			return HitTest_Triangle(triangle, ray, temp, true);
 		}
 #pragma endregion
+#pragma region SlabTest
+
+		inline bool SlabTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray)
+		{
+			float tx1 = (mesh.transformedMinAABB.x - ray.origin.x) / ray.direction.x;
+			float tx2 = (mesh.transformedMaxAABB.x - ray.origin.x) / ray.direction.x;
+
+			float tmin = std::min(tx1, tx2);
+			float tmax = std::max(tx1, tx2);
+
+			float ty1 = (mesh.transformedMinAABB.y - ray.origin.y) / ray.direction.y;
+			float ty2 = (mesh.transformedMaxAABB.y - ray.origin.y) / ray.direction.y;
+
+			tmin = std::max(tmin, std::min(ty1, ty2));
+			tmax = std::min(tmax, std::max(ty1, ty2));
+
+			float tz1 = (mesh.transformedMinAABB.z - ray.origin.z) / ray.direction.z;
+			float tz2 = (mesh.transformedMaxAABB.z - ray.origin.z) / ray.direction.z;
+
+			tmin = std::max(tmin, std::min(tz1, tz2));
+			tmax = std::min(tmax, std::max(tz1, tz2));
+
+			return tmax > 0 && tmax >= tmin;
+		}
+#pragma endregion
 #pragma region TriangeMesh HitTest
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
+			if (!SlabTest_TriangleMesh(mesh, ray))
+			{
+				return false;
+			}
+
 			bool returnBool{ false };
 			int normalCount{};
+			Triangle triangle{};
 			for (size_t i = 0; i < mesh.indices.size(); i += 3)
 			{
-				const Vector3 v0 = mesh.transformedPositions[mesh.indices[i]];
-				const Vector3 v1 = mesh.transformedPositions[mesh.indices[i + 1]];
-				const Vector3 v2 = mesh.transformedPositions[mesh.indices[i + 2]];
+				const Vector3 p0 = mesh.transformedPositions[mesh.indices[i]];
+				const Vector3 p1 = mesh.transformedPositions[mesh.indices[i + 1]];
+				const Vector3 p2 = mesh.transformedPositions[mesh.indices[i + 2]];
 
 				const Vector3 normal = mesh.transformedNormals[normalCount];
 				
 				++normalCount;
-				Triangle triangle{ v0, v1, v2, normal };
+				//triangle{ p0, p1, p2, normal };
+				triangle.v0 = p0;
+				triangle.v1 = p1;
+				triangle.v2 = p2;
+				triangle.normal = normal;
 				//Triangle triangle{ v0, v1, v2 }; // expensive but stil broke with different results.
 				triangle.cullMode = mesh.cullMode;
 
@@ -297,6 +332,7 @@ namespace dae
 
 			std::string sCommand;
 			// start a while iteration ending when the end of file is reached (ios::eof)
+
 			while (!file.eof())
 			{
 				//read the first word of the string, use the >> operator (istream::operator>>) 
@@ -356,6 +392,8 @@ namespace dae
 
 			return true;
 		}
+
+		
 #pragma warning(pop)
 	}
 }
