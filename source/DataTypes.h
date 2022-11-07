@@ -92,12 +92,7 @@ namespace dae
 		TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices, TriangleCullMode _cullMode):
 		positions(_positions), indices(_indices), cullMode(_cullMode)
 		{
-			/*for (const auto &i : positions)
-			{
-				center += Vector3{ i };
-			}
-			center = { center.x / positions.size(), center.y / positions.size(), center.z / positions.size() };*/
-
+			
 			//Calculate Normals
 			CalculateNormals();
 
@@ -110,12 +105,7 @@ namespace dae
 		TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices, const std::vector<Vector3>& _normals, TriangleCullMode _cullMode) :
 			positions(_positions), indices(_indices), normals(_normals), cullMode(_cullMode)
 		{
-			/*for (const auto &i : positions)
-			{
-				center += Vector3{ i };
-			}
-			center = { center.x / positions.size(), center.y / positions.size(), center.z / positions.size() };*/
-
+			
 			UpdateTransforms();
 		}
 
@@ -171,6 +161,14 @@ namespace dae
 
 		void CalculateNormals()
 		{
+			//// temp.
+			//for (const auto& i : positions)
+			//{
+			//	center += Vector3{ i };
+			//}
+			//center = { center.x / positions.size(), center.y / positions.size(), center.z / positions.size() };
+
+
 			normals.clear();
 			Vector3 normal{};
 			for (size_t i = 0; i < indices.size(); i += 3)
@@ -192,13 +190,13 @@ namespace dae
 			transformedNormals.clear();
 
 			const auto finalTransform{ translationTransform * rotationTransform * scaleTransform };
-			//const auto finalTransform{ translationTransform * rotationTransform };
+			//const auto finalTransform{ scaleTransform * rotationTransform * translationTransform };
 
 			transformedPositions.reserve(positions.size());
 			for (size_t i = 0; i < positions.size(); i++)
 			{
-				//positions[i] = positions[i] - center;
-				//transformedPositions.emplace_back(finalTransform.TransformPoint(positions[i]) + center);
+				/*positions[i] = positions[i] - center;
+				transformedPositions.emplace_back(finalTransform.TransformPoint(positions[i] + positions[i]));*/
 
 				transformedPositions.emplace_back(finalTransform.TransformPoint(positions[i]));
 

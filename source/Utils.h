@@ -95,7 +95,6 @@ namespace dae
 			}
 			else
 			{
-				// Dont know why it works the other way around.
 				hitRecord.didHit = false;
 				return false;
 			}
@@ -115,6 +114,47 @@ namespace dae
 			if (dotNV == 0)
 			{
 				return false;
+			}
+
+			if (!ignoreHitRecord)
+			{
+				switch (triangle.cullMode)
+				{
+				case TriangleCullMode::BackFaceCulling:
+					if (Vector3::Dot(triangle.normal, ray.direction) > 0)
+					{
+						return false;
+					}
+					break;
+				case TriangleCullMode::FrontFaceCulling:
+					if (Vector3::Dot(triangle.normal, ray.direction) < 0)
+					{
+						return false;
+					}
+					break;
+				case TriangleCullMode::NoCulling:
+					break;
+				}
+			}
+			else
+			{
+				switch (triangle.cullMode)
+				{
+				case TriangleCullMode::BackFaceCulling:
+					if (Vector3::Dot(triangle.normal, ray.direction) < 0)
+					{
+						return false;
+					}
+					break;
+				case TriangleCullMode::FrontFaceCulling:
+					if (Vector3::Dot(triangle.normal, ray.direction) > 0)
+					{
+						return false;
+					}
+					break;
+				case TriangleCullMode::NoCulling:
+					break;
+				}
 			}
 
 			float t{ Vector3::Dot((triangle.center - ray.origin), triangle.normal) / Vector3::Dot(ray.direction, triangle.normal) };
@@ -156,23 +196,23 @@ namespace dae
 				return false;
 			}
 
-			switch (triangle.cullMode)
-			{
-			case TriangleCullMode::BackFaceCulling:
-				if (Vector3::Dot(triangle.normal, ray.direction) > 0)
-				{
-					return false;
-				}
-				break;
-			case TriangleCullMode::FrontFaceCulling:
-				if (Vector3::Dot(triangle.normal, ray.direction) < 0)
-				{
-					return false;
-				}
-				break;
-			case TriangleCullMode::NoCulling:
-				break;
-			}
+			//switch (triangle.cullMode)
+			//{
+			//case TriangleCullMode::BackFaceCulling:
+			//	if (Vector3::Dot(triangle.normal, ray.direction) > 0)
+			//	{
+			//		return false;
+			//	}
+			//	break;
+			//case TriangleCullMode::FrontFaceCulling:
+			//	if (Vector3::Dot(triangle.normal, ray.direction) < 0)
+			//	{
+			//		return false;
+			//	}
+			//	break;
+			//case TriangleCullMode::NoCulling:
+			//	break;
+			//}
 
 			hitRecord.origin = p;
 			hitRecord.didHit = true;
@@ -205,12 +245,19 @@ namespace dae
 				//Triangle triangle{ v0, v1, v2 }; // expensive but stil broke with different results.
 				triangle.cullMode = mesh.cullMode;
 
-				if (HitTest_Triangle(triangle, ray, hitRecord, ignoreHitRecord))
+				bool current = HitTest_Triangle(triangle, ray, hitRecord, ignoreHitRecord);
+				/*if (HitTest_Triangle(triangle, ray, hitRecord, ignoreHitRecord))
 				{
 					returnBool = true;
+				}*/
+
+				if (current)
+				{
+					return current;
 				}
 			}
-			return returnBool;
+			//return returnBool;
+			return hitRecord.didHit;
 		}
 
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray)

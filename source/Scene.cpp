@@ -30,8 +30,6 @@ namespace dae {
 	{
 		HitRecord hit{};
 
-		// doesnt work for multiple plane geometries. Probabaly because t value issue?
-
 		for (const auto& i : m_PlaneGeometries)
 		{
 			if (GeometryUtils::HitTest_Plane(i, ray, hit))
@@ -312,21 +310,19 @@ namespace dae {
 		AddPlane({ -5.f, 0.f, 0.f }, { 1.f, 0.f, 0.f }, matLambert_GreyBlue);
 
 		//Triangle (Temp)
-	/*	auto triangle = Triangle{ { -.75f, .5f, .0f}, {-.75, 2.f, .0f}, {.75, .5f, 0.f} };
+		/*auto triangle = Triangle{ { -.75f, .5f, .0f}, {-.75, 2.f, .0f}, {.75, .5f, 0.f} };
 		triangle.cullMode = TriangleCullMode::NoCulling;
-		triangle.materialIndex = matLambert_White;
+		triangle.materialIndex = matLambert_White;*/
 
-		m_Triangles.emplace_back(triangle);*/
+		//m_Triangles.emplace_back(triangle);
 
 		//TriangleMesh
 		 
 		//pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
-		////pMesh->positions = { {-.75f, -1.f, .0f}, {-.75f, 1.f, .0f}, {.75f, 1.f, 1.f}, {.75f, -1.f, 0.f} };
-		//pMesh->positions = { {-.75f, -1.f, .0f}, {-.75f, 1.f, .0f}, {.75f, 1.f, 1.f} };
-		////pMesh->positions ={ { -1.000000f, 0.000000f, 1.000000, }, { 1.000000f, 0.000000f, 1.000000 }, { -1.000000f, 0.000000f, - 1.000000f }, { 1.000000f, 0.000000f, - 1.000000 } };
+		//pMesh->positions = { {-.75f, -1.f, .0f}, {-.75f, 1.f, .0f}, {.75f, 1.f, 1.f}, {.75f, -1.f, 0.f} };
 		//pMesh->indices = {
-		//	0, 1, 2
-		//	//0, 2, 3
+		//	0, 1, 2,
+		//	0, 2, 3
 		//};
 
 		//pMesh->CalculateNormals();

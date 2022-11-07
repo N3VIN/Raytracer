@@ -63,42 +63,36 @@ void Renderer::Render(Scene* pScene) const
 			{
 				for (const auto& i : lights)
 				{
-					//finalColor = materials[closestHit.materialIndex]->Shade();
-
-
-					//bool isPointVisible{ true };
-					//Vector3 startPoint{ closestHit.origin + closestHit.normal * 0.01f };
-					//Vector3 direction{ LightUtils::GetDirectionToLight(i, startPoint) };
-					//Ray lightRay{ startPoint, direction };
-					////Ray lightRay{ closestHit.origin, LightUtils::GetDirectionToLight(i, closestHit.origin) };
-					//lightRay.max = LightUtils::GetDirectionToLight(i, closestHit.origin).Normalize();
-					//isPointVisible = pScene->DoesHit(lightRay);
-
-					//if (isPointVisible)
-					//{
-						//finalColor = materials[closestHit.materialIndex]->Shade() * 0.5f;
-
-					//}
-					//else
-					//{
-					switch (m_CurrentLightingMode)
+					bool occluderHit{ false };
+					if (m_ShadowsEnabled)
 					{
-					case dae::Renderer::LightingMode::ObservedArea:
-						finalColor += ColorRGB({1.f, 1.f, 1.f}) * GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin));
-						break;
-					case dae::Renderer::LightingMode::Radiance:
-						finalColor += LightUtils::GetRadiance(i, closestHit.origin);
-						break;
-					case dae::Renderer::LightingMode::BRDF:
-						finalColor += materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection);
-						break;
-					case dae::Renderer::LightingMode::Combined:
-						finalColor += LightUtils::GetRadiance(i, closestHit.origin)
-							* materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection)
-							* GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin));
-						break;				
+						Vector3 startPoint{ closestHit.origin + closestHit.normal * 0.01f };
+						Vector3 direction{ LightUtils::GetDirectionToLight(i, startPoint) };
+						Ray lightRay{ startPoint, direction.Normalized() };
+						lightRay.min = 0.0001f;
+						lightRay.max = direction.Magnitude();
+						occluderHit = pScene->DoesHit(lightRay);
 					}
-	
+					if (!occluderHit)
+					{
+						switch (m_CurrentLightingMode)
+						{
+						case dae::Renderer::LightingMode::ObservedArea:
+							finalColor += ColorRGB({ 1.f, 1.f, 1.f }) * GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin));
+							break;
+						case dae::Renderer::LightingMode::Radiance:
+							finalColor += LightUtils::GetRadiance(i, closestHit.origin);
+							break;
+						case dae::Renderer::LightingMode::BRDF:
+							finalColor += materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection);
+							break;
+						case dae::Renderer::LightingMode::Combined:
+							finalColor += LightUtils::GetRadiance(i, closestHit.origin)
+								* materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection)
+								* GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin));
+							break;
+						}
+					}
 				}
 			}
 			//Update Color in Buffer
@@ -109,7 +103,6 @@ void Renderer::Render(Scene* pScene) const
 				static_cast<uint8_t>(finalColor.g * 255),
 				static_cast<uint8_t>(finalColor.b * 255));
 
-			//finalColor = colors::Black;
 		}
 	}
 
