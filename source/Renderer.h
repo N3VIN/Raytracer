@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include "Math.h"
-
+#include <vector>
 
 
 struct SDL_Window;
@@ -11,7 +11,9 @@ struct SDL_Surface;
 namespace dae
 {
 	class Scene;
-
+	class Camera;
+	class Light;
+	class Material;
 
 	class Renderer final
 	{
@@ -25,6 +27,7 @@ namespace dae
 		Renderer& operator=(Renderer&&) noexcept = delete;
 
 		void Render(Scene* pScene) const;
+		void RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float aspectRatio, const Camera& camera, const std::vector<Light>& lights, const std::vector<Material*>& materials) const;
 		bool SaveBufferToImage() const;
 
 		void CycleLightingMode();

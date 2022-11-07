@@ -78,6 +78,7 @@ namespace dae
 			ONB[3][2] = origin.z;
 			ONB[3][3] = 1;
 
+			cameraToWorld = ONB;
 			return ONB;
 		}
 
