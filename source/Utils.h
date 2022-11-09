@@ -157,7 +157,28 @@ namespace dae
 				}
 			}
 
-			float t{ Vector3::Dot((triangle.center - ray.origin), triangle.normal) / Vector3::Dot(ray.direction, triangle.normal) };
+
+		/*	switch (triangle.cullMode)
+			{
+			case TriangleCullMode::BackFaceCulling:
+				if (Vector3::Dot(triangle.normal, ray.direction) < 0)
+				{
+					return false;
+				}
+				break;
+			case TriangleCullMode::FrontFaceCulling:
+				if (Vector3::Dot(triangle.normal, ray.direction) > 0)
+				{
+					return false;
+				}
+				break;
+			case TriangleCullMode::NoCulling:
+				break;
+			}*/
+
+			Vector3 center{(triangle.v0 + triangle.v1 + triangle.v2) / 3.f};
+
+			float t{ Vector3::Dot((center - ray.origin), triangle.normal) / Vector3::Dot(ray.direction, triangle.normal) };
 
 			if (t < ray.min || t > ray.max)
 			{
@@ -196,24 +217,25 @@ namespace dae
 				return false;
 			}
 
-			//switch (triangle.cullMode)
-			//{
-			//case TriangleCullMode::BackFaceCulling:
-			//	if (Vector3::Dot(triangle.normal, ray.direction) > 0)
-			//	{
-			//		return false;
-			//	}
-			//	break;
-			//case TriangleCullMode::FrontFaceCulling:
-			//	if (Vector3::Dot(triangle.normal, ray.direction) < 0)
-			//	{
-			//		return false;
-			//	}
-			//	break;
-			//case TriangleCullMode::NoCulling:
-			//	break;
-			//}
+			/*switch (triangle.cullMode)
+			{
+			case TriangleCullMode::BackFaceCulling:
+				if (Vector3::Dot(triangle.normal, ray.direction) > 0)
+				{
+					return false;
+				}
+				break;
+			case TriangleCullMode::FrontFaceCulling:
+				if (Vector3::Dot(triangle.normal, ray.direction) < 0)
+				{
+					return false;
+				}
+				break;
+			case TriangleCullMode::NoCulling:
+				break;
+			}*/
 
+			hitRecord.materialIndex = triangle.materialIndex;
 			hitRecord.origin = p;
 			hitRecord.didHit = true;
 			hitRecord.t = t;
@@ -260,9 +282,10 @@ namespace dae
 				return false;
 			}
 
-			bool returnBool{ false };
 			int normalCount{};
 			Triangle triangle{};
+			HitRecord hit{};
+
 			for (size_t i = 0; i < mesh.indices.size(); i += 3)
 			{
 				const Vector3 p0 = mesh.transformedPositions[mesh.indices[i]];
@@ -272,26 +295,23 @@ namespace dae
 				const Vector3 normal = mesh.transformedNormals[normalCount];
 				
 				++normalCount;
-				//triangle{ p0, p1, p2, normal };
 				triangle.v0 = p0;
 				triangle.v1 = p1;
 				triangle.v2 = p2;
 				triangle.normal = normal;
-				//Triangle triangle{ v0, v1, v2 }; // expensive but stil broke with different results.
 				triangle.cullMode = mesh.cullMode;
+				triangle.materialIndex = mesh.materialIndex;
 
-				bool current = HitTest_Triangle(triangle, ray, hitRecord, ignoreHitRecord);
-				/*if (HitTest_Triangle(triangle, ray, hitRecord, ignoreHitRecord))
-				{
-					returnBool = true;
-				}*/
 
-				if (current)
+				if (HitTest_Triangle(triangle, ray, hit, ignoreHitRecord))
 				{
-					return current;
+					if (hit.t < hitRecord.t)
+					{
+						hitRecord = hit;
+					}
+					//return true;
 				}
 			}
-			//return returnBool;
 			return hitRecord.didHit;
 		}
 

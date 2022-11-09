@@ -56,17 +56,17 @@ namespace dae {
 
 		//..
 
-		for (const auto& i : m_Triangles)
-		{
-			// use the new hit for the intersection.
-			if (GeometryUtils::HitTest_Triangle(i, ray, hit))
-			{
-				if (hit.t < closestHit.t)
-				{
-					closestHit = hit;
-				}
-			}
-		}
+		//for (const auto& i : m_Triangles)
+		//{
+		//	// use the new hit for the intersection.
+		//	if (GeometryUtils::HitTest_Triangle(i, ray, hit))
+		//	{
+		//		if (hit.t < closestHit.t)
+		//		{
+		//			closestHit = hit;
+		//		}
+		//	}
+		//}
 
 		for (const auto& i : m_TriangleMeshGeometries)
 		{
@@ -310,10 +310,10 @@ namespace dae {
 
 		//Triangle (Temp)
 		/*auto triangle = Triangle{ { -.75f, .5f, .0f}, {-.75, 2.f, .0f}, {.75, .5f, 0.f} };
-		triangle.cullMode = TriangleCullMode::NoCulling;
-		triangle.materialIndex = matLambert_White;*/
+		triangle.cullMode = TriangleCullMode::BackFaceCulling;
+		triangle.materialIndex = matLambert_White;
 
-		//m_Triangles.emplace_back(triangle);
+		m_Triangles.emplace_back(triangle);*/
 
 		//TriangleMesh
 		 
@@ -332,20 +332,20 @@ namespace dae {
 
 		//pMesh->UpdateTransforms();
 
-		pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
-		Utils::ParseOBJ("Resources/simple_object.obj",
+		/*pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
+		Utils::ParseOBJ("Resources/simple_cube.obj",
 			pMesh->positions,
 			pMesh->normals,
 			pMesh->indices);
 
-		pMesh->Translate({ 0.0f, 1.f, 0.f });
 		pMesh->Scale({ 0.7f, 0.7f, 0.7f });
+		pMesh->Translate({ 0.0f, 1.f, 0.f });
 
 		pMesh->UpdateAABB();
-		pMesh->UpdateTransforms();
+		pMesh->UpdateTransforms();*/
 
 		/*pMesh = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
-		Utils::ParseOBJ("Resources/Lowpoly_bunny2.obj",
+		Utils::ParseOBJ("Resources/Lowpoly_bunny.obj",
 			pMesh->positions,
 			pMesh->normals,
 			pMesh->indices);
@@ -466,7 +466,7 @@ namespace dae {
 		
 		//Mesh
 		pMesh = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
-		Utils::ParseOBJ("Resources/Lowpoly_bunny2.obj",
+		Utils::ParseOBJ("Resources/Lowpoly_bunny.obj",
 			pMesh->positions,
 			pMesh->normals,
 			pMesh->indices);

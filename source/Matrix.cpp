@@ -4,6 +4,8 @@
 
 #include "MathHelpers.h"
 #include <cmath>
+#include <ppl.h> // parallel_for
+
 
 namespace dae {
 	Matrix::Matrix(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis, const Vector3& t) :
@@ -58,13 +60,21 @@ namespace dae {
 	const Matrix& Matrix::Transpose()
 	{
 		Matrix result{};
-		for (int r{ 0 }; r < 4; ++r)
+		concurrency::parallel_for(0u, 4u, [&](int r)
+			{
+				for (int c{ 0 }; c < 4; ++c)
+				{
+					result[r][c] = data[c][r];
+				}
+			});
+
+		/*for (int r{ 0 }; r < 4; ++r)
 		{
 			for (int c{ 0 }; c < 4; ++c)
 			{
 				result[r][c] = data[c][r];
 			}
-		}
+		}*/
 
 		data[0] = result[0];
 		data[1] = result[1];
@@ -201,16 +211,25 @@ namespace dae {
 		Matrix result{};
 		Matrix m_transposed = Transpose(m);
 
-		for (int r{ 0 }; r < 4; ++r)
+	/*	for (int r{ 0 }; r < 4; ++r)
 		{
 			for (int c{ 0 }; c < 4; ++c)
 			{
 				result[r][c] = Vector4::Dot(data[r], m_transposed[c]);
 			}
-		}
+		}*/
+
+		concurrency::parallel_for(0u, 4u, [&](int r)
+			{
+				for (int c{ 0 }; c < 4; ++c)
+				{
+					result[r][c] = Vector4::Dot(data[r], m_transposed[c]);
+				}
+			});
 
 		return result;
 	}
+
 
 	const Matrix& Matrix::operator*=(const Matrix& m)
 	{

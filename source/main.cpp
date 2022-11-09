@@ -34,7 +34,6 @@ int main(int argc, char* args[])
 
 	SDL_Window* pWindow = SDL_CreateWindow(
 		"RayTracer - **Nevin Amarendranath**",
-		//"Engine",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		width, height, 0);
@@ -50,8 +49,8 @@ int main(int argc, char* args[])
 	//const auto pScene = new Scene_W2();
 	//const auto pScene = new Scene_W3();
 	//const auto pScene = new Scene_W4();
-	const auto pScene = new Scene_W4_ReferenceScene();
-	//const auto pScene = new Scene_W4_Bunny();
+	//const auto pScene = new Scene_W4_ReferenceScene();
+	const auto pScene = new Scene_W4_Bunny();
 	pScene->Initialize();
 
 	//Start loop

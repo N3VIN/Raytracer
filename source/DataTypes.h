@@ -72,7 +72,6 @@ namespace dae
 			const Vector3 edgeV0V1 = v1 - v0;
 			const Vector3 edgeV0V2 = v2 - v0;
 			normal = Vector3::Cross(edgeV0V1, edgeV0V2).Normalized();
-			center = (v0 + v1 + v2) / 3.f;
 		}
 
 		Vector3 v0{};
@@ -80,7 +79,6 @@ namespace dae
 		Vector3 v2{};
 
 		Vector3 normal{};
-		Vector3 center{};
 
 		TriangleCullMode cullMode{};
 		unsigned char materialIndex{};
@@ -167,14 +165,6 @@ namespace dae
 
 		void CalculateNormals()
 		{
-			//// temp.
-			//for (const auto& i : positions)
-			//{
-			//	center += Vector3{ i };
-			//}
-			//center = { center.x / positions.size(), center.y / positions.size(), center.z / positions.size() };
-
-
 			normals.clear();
 			Vector3 normal{};
 			for (size_t i = 0; i < indices.size(); i += 3)
@@ -195,22 +185,12 @@ namespace dae
 			transformedPositions.clear();
 			transformedNormals.clear();
 
-			const auto finalTransform{ translationTransform * rotationTransform * scaleTransform };
-			//const auto finalTransform{ scaleTransform * rotationTransform * translationTransform };
+			//const auto finalTransform{ translationTransform * rotationTransform * scaleTransform };
+			const auto finalTransform{ scaleTransform * rotationTransform * translationTransform };
 
 			transformedPositions.reserve(positions.size());
 
-			//for (uint32_t i = 0; i < positions.size(); i++)
-			//{
-			//	/*positions[i] = positions[i] - center;
-			//	transformedPositions.emplace_back(finalTransform.TransformPoint(positions[i] + positions[i]));*/
-
-			//	transformedPositions.emplace_back(finalTransform.TransformPoint(positions[i]));
-
-			//	//transformedPositions.emplace_back() = positions[i];
-			//}
-
-			for (auto& p : positions)
+			for (const auto& p : positions)
 			{
 				transformedPositions.emplace_back(finalTransform.TransformPoint(p));
 
@@ -218,17 +198,11 @@ namespace dae
 
 			transformedNormals.reserve(normals.size());
 
-			//for (uint32_t i = 0; i < normals.size(); i++)
-			//{
-			//	transformedNormals.emplace_back( finalTransform.TransformVector(normals[i]));
-
-			//	//transformedNormals.emplace_back() = normals[i];
-			//}
-
-			for (auto& n : normals)
+			for (const auto& n : normals)
 			{
-				transformedNormals.emplace_back(finalTransform.TransformVector(n));
-
+				transformedNormals.emplace_back(rotationTransform.TransformVector(n));
+				//transformedNormals.emplace_back(finalTransform.TransformVector(n).Normalized());
+				
 			}
 
 			UpdateTransformedAABB(finalTransform);
