@@ -157,76 +157,22 @@ namespace dae
 				}
 			}
 
-
-		/*	switch (triangle.cullMode)
-			{
-			case TriangleCullMode::BackFaceCulling:
-				if (Vector3::Dot(triangle.normal, ray.direction) < 0)
-				{
-					return false;
-				}
-				break;
-			case TriangleCullMode::FrontFaceCulling:
-				if (Vector3::Dot(triangle.normal, ray.direction) > 0)
-				{
-					return false;
-				}
-				break;
-			case TriangleCullMode::NoCulling:
-				break;
-			}*/
-
-			Vector3 center{(triangle.v0 + triangle.v1 + triangle.v2) / 3.f};
-
-			float t{ Vector3::Dot((center - ray.origin), triangle.normal) / Vector3::Dot(ray.direction, triangle.normal) };
-
-			if (t < ray.min || t > ray.max)
-			{
-				return false;
-			}
-
-			Vector3 p{ ray.origin + (t * ray.direction) };
-
-			Vector3 edge{};
-			Vector3 pointToSide{};
-
-			// edge 1
-			edge = triangle.v1 - triangle.v0;
-			pointToSide = p - triangle.v0;
-
-			if (Vector3::Dot(triangle.normal, Vector3::Cross(edge, pointToSide)) < 0)
-			{
-				return false;
-			}
-
-			// edge 2
-			edge = triangle.v2 - triangle.v1;
-			pointToSide = p - triangle.v1;
-
-			if (Vector3::Dot(triangle.normal, Vector3::Cross(edge, pointToSide)) < 0)
-			{
-				return false;
-			}
-
-			// edge 3
-			edge = triangle.v0 - triangle.v2;
-			pointToSide = p - triangle.v2;
-
-			if (Vector3::Dot(triangle.normal, Vector3::Cross(edge, pointToSide)) < 0)
-			{
-				return false;
-			}
+			const float EPSILON = 0.0000001;
+			Vector3 edge1{ triangle.v1 - triangle.v0 };
+			Vector3 edge2{ triangle.v2 - triangle.v0 };
+			Vector3 pVec{ Vector3::Cross(ray.direction, edge2) };
+			float det = Vector3::Dot(edge1, pVec);
 
 			/*switch (triangle.cullMode)
 			{
 			case TriangleCullMode::BackFaceCulling:
-				if (Vector3::Dot(triangle.normal, ray.direction) > 0)
+				if (det > 0)
 				{
 					return false;
 				}
 				break;
 			case TriangleCullMode::FrontFaceCulling:
-				if (Vector3::Dot(triangle.normal, ray.direction) < 0)
+				if (det < 0)
 				{
 					return false;
 				}
@@ -234,6 +180,79 @@ namespace dae
 			case TriangleCullMode::NoCulling:
 				break;
 			}*/
+
+			float invDet = 1 / det;
+
+			Vector3 tVec = ray.origin - triangle.v0;
+
+			float u = invDet * Vector3::Dot(tVec, pVec);
+
+			if (u < 0.0f || u > 1.f)
+			{
+				return false;
+			}
+
+			Vector3 qVec = Vector3::Cross(tVec, edge1);
+
+			float v = invDet * Vector3::Dot(ray.direction, qVec);
+
+			if (v < 0.0f || u + v > 1.f)
+			{
+				return false;
+			}
+
+			float t = invDet * Vector3::Dot(edge2, qVec);
+
+			if (t < ray.min || t > ray.max)
+				return false;
+
+			Vector3 p{ ray.origin + (t * ray.direction) };
+
+
+			//..
+
+
+			//Vector3 center{(triangle.v0 + triangle.v1 + triangle.v2) / 3.f};
+
+			//float t{ Vector3::Dot((center - ray.origin), triangle.normal) / Vector3::Dot(ray.direction, triangle.normal) };
+
+			//if (t < ray.min || t > ray.max)
+			//{
+			//	return false;
+			//}
+
+			//Vector3 p{ ray.origin + (t * ray.direction) };
+
+			//Vector3 edge{};
+			//Vector3 pointToSide{};
+
+			//// edge 1
+			//edge = triangle.v1 - triangle.v0;
+			//pointToSide = p - triangle.v0;
+
+			//if (Vector3::Dot(triangle.normal, Vector3::Cross(edge, pointToSide)) < 0)
+			//{
+			//	return false;
+			//}
+
+			//// edge 2
+			//edge = triangle.v2 - triangle.v1;
+			//pointToSide = p - triangle.v1;
+
+			//if (Vector3::Dot(triangle.normal, Vector3::Cross(edge, pointToSide)) < 0)
+			//{
+			//	return false;
+			//}
+
+			//// edge 3
+			//edge = triangle.v0 - triangle.v2;
+			//pointToSide = p - triangle.v2;
+
+			//if (Vector3::Dot(triangle.normal, Vector3::Cross(edge, pointToSide)) < 0)
+			//{
+			//	return false;
+			//}
+
 
 			hitRecord.materialIndex = triangle.materialIndex;
 			hitRecord.origin = p;

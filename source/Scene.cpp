@@ -56,16 +56,6 @@ namespace dae {
 
 		//..
 
-		//for (const auto& i : m_Triangles)
-		//{
-		//	// use the new hit for the intersection.
-		//	if (GeometryUtils::HitTest_Triangle(i, ray, hit))
-		//	{
-		//		if (hit.t < closestHit.t)
-		//		{
-		//			closestHit = hit;
-		//		}
-		//	}
 		//}
 
 		for (const auto& i : m_TriangleMeshGeometries)
@@ -317,20 +307,20 @@ namespace dae {
 
 		//TriangleMesh
 		 
-		//pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
-		//pMesh->positions = { {-.75f, -1.f, .0f}, {-.75f, 1.f, .0f}, {.75f, 1.f, 1.f}, {.75f, -1.f, 0.f} };
-		//pMesh->indices = {
-		//	0, 1, 2,
-		//	0, 2, 3
-		//};
+		pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
+		pMesh->positions = { {-.75f, -1.f, .0f}, {-.75f, 1.f, .0f}, {.75f, 1.f, 1.f}, {.75f, -1.f, 0.f} };
+		pMesh->indices = {
+			0, 1, 2,
+			0, 2, 3
+		};
 
-		//pMesh->CalculateNormals();
+		pMesh->CalculateNormals();
 
-		//pMesh->Translate({ 0.f, 1.5f, 0.f });
-		////pMesh->Scale({ 2.f, 2.f, 2.f });
-		//pMesh->UpdateAABB();
+		pMesh->Translate({ 0.f, 1.5f, 0.f });
+		//pMesh->Scale({ 2.f, 2.f, 2.f });
+		pMesh->UpdateAABB();
 
-		//pMesh->UpdateTransforms();
+		pMesh->UpdateTransforms();
 
 		/*pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
 		Utils::ParseOBJ("Resources/simple_cube.obj",

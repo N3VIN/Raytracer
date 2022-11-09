@@ -190,6 +190,7 @@ namespace dae
 			{
 				totalPitch -= mouseX * (sensitivity * deltaTime);
 			}
+			// mouse == 5 because SDL_BUTTON is a mask and combining them for 2 buttons.
 			else if (mouse == 5 && mouseY > 0) // move down.
 			{
 				origin -= up * ( 2.f * deltaTime);
