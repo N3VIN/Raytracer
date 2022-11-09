@@ -144,11 +144,11 @@ namespace dae
 			}
 
 			// unreal style up and down.
-			if (pKeyboardState[SDL_SCANCODE_C])
+			if (pKeyboardState[SDL_SCANCODE_Z])
 			{
 				origin -= up * velocity * deltaTime;
 			}
-			if (pKeyboardState[SDL_SCANCODE_Z])
+			if (pKeyboardState[SDL_SCANCODE_C])
 			{
 				origin += up * velocity * deltaTime;
 			}
@@ -174,28 +174,30 @@ namespace dae
 			float sensitivity{ 0.5f };
 			auto mouse = SDL_GetRelativeMouseState(&mouseX, &mouseY);
 
+			//std::cout << mouseX << ", " << mouseY << std::endl;
+			//std::cout << mouse << std::endl;
 
-			if (mouse == SDL_BUTTON(3))
+			if (mouse == SDL_BUTTON(3)) // rotate yaw and pitch.
 			{
 				totalYaw -= mouseY * (sensitivity * deltaTime);
 				totalPitch -= mouseX * (sensitivity * deltaTime);
-
-
 			}
-			else if (mouse == SDL_BUTTON(1))
+			else if (mouse == SDL_BUTTON(1) && mouseY != 0) // move forward and backward.
 			{
 				origin += forward * (mouseY * (sensitivity * deltaTime));
-				totalYaw += mouseX * (sensitivity * deltaTime);
-
 			}
-
-			/*Matrix rotationMatrix = Matrix::CreateRotation(totalPitch, totalYaw, 0.f);
-			forward = rotationMatrix.TransformVector(Vector3::UnitZ);
-			forward.Normalize();
-			right = rotationMatrix.TransformVector(Vector3::UnitX);
-			right.Normalize();
-			up = rotationMatrix.TransformVector(Vector3::UnitY);
-			up.Normalize();*/
+			else if (mouse == SDL_BUTTON(1) && mouseX != 0) // rotate yaw.
+			{
+				totalPitch -= mouseX * (sensitivity * deltaTime);
+			}
+			else if (mouse == 5 && mouseY > 0) // move down.
+			{
+				origin -= up * ( 2.f * deltaTime);
+			}
+			else if (mouse == 5 && mouseY < 0) // move up.
+			{
+				origin += up * (2.f * deltaTime);
+			}
 
 			Matrix rotationMatrix = Matrix::CreateRotation(totalPitch, totalYaw, 0.f);
 			forward = rotationMatrix.TransformVector(Vector3::UnitZ);
