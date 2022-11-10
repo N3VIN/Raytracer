@@ -60,21 +60,21 @@ namespace dae {
 	const Matrix& Matrix::Transpose()
 	{
 		Matrix result{};
-		/*concurrency::parallel_for(0u, 4u, [&](int r)
+		concurrency::parallel_for(0u, 4u, [&](int r)
 			{
 				for (int c{ 0 }; c < 4; ++c)
 				{
 					result[r][c] = data[c][r];
 				}
-			});*/
+			});
 
-		for (int r{ 0 }; r < 4; ++r)
+		/*for (int r{ 0 }; r < 4; ++r)
 		{
 			for (int c{ 0 }; c < 4; ++c)
 			{
 				result[r][c] = data[c][r];
 			}
-		}
+		}*/
 
 		data[0] = result[0];
 		data[1] = result[1];
@@ -211,21 +211,21 @@ namespace dae {
 		Matrix result{};
 		Matrix m_transposed = Transpose(m);
 
-		for (int r{ 0 }; r < 4; ++r)
+		/*for (int r{ 0 }; r < 4; ++r)
 		{
 			for (int c{ 0 }; c < 4; ++c)
 			{
 				result[r][c] = Vector4::Dot(data[r], m_transposed[c]);
 			}
-		}
+		}*/
 
-		/*concurrency::parallel_for(0u, 4u, [&](int r)
+		concurrency::parallel_for(0u, 4u, [&](int r)
 			{
 				for (int c{ 0 }; c < 4; ++c)
 				{
 					result[r][c] = Vector4::Dot(data[r], m_transposed[c]);
 				}
-			});*/
+			});
 
 		return result;
 	}

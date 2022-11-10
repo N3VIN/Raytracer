@@ -10,10 +10,10 @@ struct SDL_Surface;
 
 namespace dae
 {
-	class Scene;
-	class Camera;
-	class Light;
+	struct Camera;
+	struct Light;
 	class Material;
+	class Scene;
 
 	class Renderer final
 	{

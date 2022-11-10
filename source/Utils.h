@@ -15,27 +15,28 @@ namespace dae
 		//SPHERE HIT-TESTS
 		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			float a{ Vector3::Dot(ray.direction, ray.direction) };
-			float b{ Vector3::Dot((ray.direction * 2), (ray.origin - sphere.origin)) };
+			const float a{ Vector3::Dot(ray.direction, ray.direction) };
+			const float b{ Vector3::Dot((ray.direction * 2), (ray.origin - sphere.origin)) };
 			//float b{ Dot((ray.origin - m_Point), ray.direction * 2.0f) };
-			float c{ (Vector3::Dot((ray.origin - sphere.origin), (ray.origin - sphere.origin))) - (sphere.radius * sphere.radius) };
+			const float c{ (Vector3::Dot((ray.origin - sphere.origin), (ray.origin - sphere.origin))) - (sphere.radius * sphere.radius) };
 
-			float discriminant{ (b * b) - (4 * (a * c)) };
+			const float discriminant{ (b * b) - (4 * (a * c)) };
 
 			float t{};
 
-
+			/*if (discriminant < 0)
+			{
+				return false;
+			}*/
 			if (discriminant > 0)
 			{
+				//t = ((-b) + sqrt(discriminant)) / (2 * a);
 
-
-				t = ((-b) + sqrt(discriminant)) / (2 * a);
-
-				if (t <= ray.min)
+				/*if (t <= ray.min)
 				{
 					t = ((-b) - sqrt(discriminant)) / (2 * a);
 
-				}
+				}*/
 
 				t = ((-b) - sqrt(discriminant)) / (2 * a);
 
@@ -55,10 +56,8 @@ namespace dae
 				}
 				else
 				{
-					hitRecord.didHit = false;
 					return false;
 				}
-
 			}
 			else
 			{
@@ -76,7 +75,7 @@ namespace dae
 		//PLANE HIT-TESTS
 		inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			float t{ Vector3::Dot((plane.origin - ray.origin), plane.normal) / Vector3::Dot(ray.direction, plane.normal) };
+			const float t{ Vector3::Dot((plane.origin - ray.origin), plane.normal) / Vector3::Dot(ray.direction, plane.normal) };
 
 			if (t >= ray.min && t <= ray.max)
 			{
@@ -110,7 +109,7 @@ namespace dae
 		//TRIANGLE HIT-TESTS
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			float dotNV{ Vector3::Dot(triangle.normal, ray.direction) };
+			const float dotNV{ Vector3::Dot(triangle.normal, ray.direction) };
 			if (dotNV == 0)
 			{
 				return false;
@@ -121,13 +120,13 @@ namespace dae
 				switch (triangle.cullMode)
 				{
 				case TriangleCullMode::BackFaceCulling:
-					if (Vector3::Dot(triangle.normal, ray.direction) > 0)
+					if (dotNV > 0)
 					{
 						return false;
 					}
 					break;
 				case TriangleCullMode::FrontFaceCulling:
-					if (Vector3::Dot(triangle.normal, ray.direction) < 0)
+					if (dotNV < 0)
 					{
 						return false;
 					}
@@ -141,13 +140,13 @@ namespace dae
 				switch (triangle.cullMode)
 				{
 				case TriangleCullMode::BackFaceCulling:
-					if (Vector3::Dot(triangle.normal, ray.direction) < 0)
+					if (dotNV < 0)
 					{
 						return false;
 					}
 					break;
 				case TriangleCullMode::FrontFaceCulling:
-					if (Vector3::Dot(triangle.normal, ray.direction) > 0)
+					if (dotNV > 0)
 					{
 						return false;
 					}
@@ -157,56 +156,68 @@ namespace dae
 				}
 			}
 
-			const float EPSILON = 0.0000001;
-			Vector3 edge1{ triangle.v1 - triangle.v0 };
-			Vector3 edge2{ triangle.v2 - triangle.v0 };
-			Vector3 pVec{ Vector3::Cross(ray.direction, edge2) };
-			float det = Vector3::Dot(edge1, pVec);
+			const Vector3 edge1{ triangle.v1 - triangle.v0 };
+			const Vector3 edge2{ triangle.v2 - triangle.v0 };
+			const Vector3 pVec{ Vector3::Cross(ray.direction, edge2) };
+			const float det = Vector3::Dot(edge1, pVec);
 
-			/*switch (triangle.cullMode)
-			{
-			case TriangleCullMode::BackFaceCulling:
-				if (det > 0)
-				{
-					return false;
-				}
-				break;
-			case TriangleCullMode::FrontFaceCulling:
-				if (det < 0)
-				{
-					return false;
-				}
-				break;
-			case TriangleCullMode::NoCulling:
-				break;
-			}*/
 
-			float invDet = 1 / det;
+			//if (det < -FLT_EPSILON)
+			//{
+			//	//backFace hit
+			//	if (!ignoreHitRecord && triangle.cullMode == TriangleCullMode::BackFaceCulling)
+			//	{
+			//		return false; // culling
+			//	}
+			//	if (ignoreHitRecord && triangle.cullMode == TriangleCullMode::FrontFaceCulling)
+			//	{
+			//		return false; // shadow inverted culling
+			//	}
+			//}
+			//else if(det > FLT_EPSILON)
+			//{
+			//	// Frontface hit
+			//	if (!ignoreHitRecord && triangle.cullMode == TriangleCullMode::FrontFaceCulling)
+			//	{
+			//		return false;
+			//	}
+			//	if (ignoreHitRecord && triangle.cullMode == TriangleCullMode::BackFaceCulling)
+			//	{
+			//		return false;
+			//	}
 
-			Vector3 tVec = ray.origin - triangle.v0;
+			//}
+			//else
+			//{
+			//	return false;
+			//}
 
-			float u = invDet * Vector3::Dot(tVec, pVec);
+			const float invDet = 1 / det;
+
+			const Vector3 tVec = ray.origin - triangle.v0;
+
+			const float u = invDet * Vector3::Dot(tVec, pVec);
 
 			if (u < 0.0f || u > 1.f)
 			{
 				return false;
 			}
 
-			Vector3 qVec = Vector3::Cross(tVec, edge1);
+			const Vector3 qVec = Vector3::Cross(tVec, edge1);
 
-			float v = invDet * Vector3::Dot(ray.direction, qVec);
+			const float v = invDet * Vector3::Dot(ray.direction, qVec);
 
 			if (v < 0.0f || u + v > 1.f)
 			{
 				return false;
 			}
 
-			float t = invDet * Vector3::Dot(edge2, qVec);
+			const float t = invDet * Vector3::Dot(edge2, qVec);
 
 			if (t < ray.min || t > ray.max)
 				return false;
 
-			Vector3 p{ ray.origin + (t * ray.direction) };
+			const Vector3 p{ ray.origin + (t * ray.direction) };
 
 
 			//..
@@ -304,6 +315,8 @@ namespace dae
 			int normalCount{};
 			Triangle triangle{};
 			HitRecord hit{};
+			triangle.cullMode = mesh.cullMode;
+			triangle.materialIndex = mesh.materialIndex;
 
 			for (size_t i = 0; i < mesh.indices.size(); i += 3)
 			{
@@ -318,9 +331,6 @@ namespace dae
 				triangle.v1 = p1;
 				triangle.v2 = p2;
 				triangle.normal = normal;
-				triangle.cullMode = mesh.cullMode;
-				triangle.materialIndex = mesh.materialIndex;
-
 
 				if (HitTest_Triangle(triangle, ray, hit, ignoreHitRecord))
 				{
@@ -328,7 +338,10 @@ namespace dae
 					{
 						hitRecord = hit;
 					}
-					//return true;
+					if (ignoreHitRecord)
+					{
+						return true;
+					}
 				}
 			}
 			return hitRecord.didHit;

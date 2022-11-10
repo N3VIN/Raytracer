@@ -76,14 +76,14 @@ namespace dae {
 	{
 		HitRecord tempHitRecord{};
 
-		for (const auto& i : m_PlaneGeometries)
+		/*for (const auto& i : m_PlaneGeometries)
 		{
 			if (GeometryUtils::HitTest_Plane(i, ray, tempHitRecord, true))
 			{
 				return true;
 			}
 
-		}
+		}*/
 
 		//..
 

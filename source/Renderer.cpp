@@ -37,7 +37,7 @@ void Renderer::Render(Scene* pScene) const
 	auto& materials = pScene->GetMaterials();
 	auto& lights = pScene->GetLights();
 
-	float fov = camera.fovAngle;
+	const float fov = camera.fovAngle;
 
 	const uint32_t numPixels = m_Width * m_Height;
 
@@ -105,23 +105,23 @@ void dae::Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, f
 	const int px = pixelIndex % m_Width;
 	const int py = pixelIndex / m_Width;
 
-	float rx = px + 0.5f;
-	float ry = py + 0.5f;
+	const float rx = px + 0.5f;
+	const float ry = py + 0.5f;
 
-	float cx = (2 * (rx / float(m_Width)) - 1) * aspectRatio * fov;
-	float cy = (1 - (2 * (ry / float(m_Height)))) * fov;
+	const float cx = (2 * (rx / float(m_Width)) - 1) * aspectRatio * fov;
+	const float cy = (1 - (2 * (ry / float(m_Height)))) * fov;
 
-	Vector3 forwardVec{ cx, cy, 1 };
+	const Vector3 forwardVec{ cx, cy, 1 };
 
 	//RayDirection calculations.
 	//Vector3 rayDirection{ (x * right) + (y * up) + look};
 	//Vector3 rayDirection{ transformedVector.GetAxisX().x, transformedVector.GetAxisY().y, transformedVector.GetAxisZ().z};
 	
 	//Vector3 rayDirection{ cameraToWorld.TransformVector(forwardVec.Normalized()) };
-	Vector3 rayDirection{ camera.cameraToWorld.TransformVector(forwardVec.Normalized())};
+	const Vector3 rayDirection{ camera.cameraToWorld.TransformVector(forwardVec.Normalized())};
 	rayDirection.Normalized();
 
-	Ray viewRay{ camera.origin, rayDirection };
+	const Ray viewRay{ camera.origin, rayDirection };
 	ColorRGB finalColor{};
 
 	HitRecord closestHit{};
@@ -133,19 +133,24 @@ void dae::Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, f
 	{
 		for (const auto& i : lights)
 		{
+			const Vector3 startPoint{ closestHit.origin + closestHit.normal * 0.01f };
+			const Vector3 direction{ LightUtils::GetDirectionToLight(i, startPoint) };
+			Ray lightRay{ startPoint, direction.Normalized() };
+			lightRay.min = 0.0001f;
+			lightRay.max = direction.Magnitude();
 			bool occluderHit{ false };
+
+			const auto lambertCosine{ GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin)) };
+			const auto radiance{ LightUtils::GetRadiance(i, closestHit.origin) };
+			const auto brdf{ materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection) };
+
 			if (m_ShadowsEnabled)
 			{
-				Vector3 startPoint{ closestHit.origin + closestHit.normal * 0.01f };
-				Vector3 direction{ LightUtils::GetDirectionToLight(i, startPoint) };
-				Ray lightRay{ startPoint, direction.Normalized() };
-				lightRay.min = 0.0001f;
-				lightRay.max = direction.Magnitude();
 				occluderHit = pScene->DoesHit(lightRay);
 			}
 			if (!occluderHit)
 			{
-				switch (m_CurrentLightingMode)
+				/*switch (m_CurrentLightingMode)
 				{
 				case dae::Renderer::LightingMode::ObservedArea:
 					finalColor += ColorRGB({ 1.f, 1.f, 1.f }) * GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin));
@@ -160,6 +165,24 @@ void dae::Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, f
 					finalColor += LightUtils::GetRadiance(i, closestHit.origin)
 						* materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection)
 						* GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin));
+					break;
+				}*/
+			
+				switch (m_CurrentLightingMode)
+				{
+				case dae::Renderer::LightingMode::ObservedArea:
+					finalColor += ColorRGB({ 1.f, 1.f, 1.f }) * lambertCosine;
+					break;
+				case dae::Renderer::LightingMode::Radiance:
+					finalColor += radiance;
+					break;
+				case dae::Renderer::LightingMode::BRDF:
+					finalColor += brdf;
+					break;
+				case dae::Renderer::LightingMode::Combined:
+					finalColor += radiance
+						* brdf
+						* lambertCosine;
 					break;
 				}
 			}
@@ -198,16 +221,6 @@ void dae::Renderer::CycleLightingMode()
 float Renderer::GetLambertCosine(const dae::Vector3& normal, const dae::Vector3& lightDirection) const
 {
 	float lambertCosine{};
-	lambertCosine = Vector3::Dot(normal, lightDirection.Normalized());
-	if (lambertCosine < 0)
-	{
-		return 0.0f;
-		//return lambertCosine;
-	}
-	else
-	{
-		return lambertCosine;
-	}
-
-
+	lambertCosine = std::max( Vector3::Dot(normal, lightDirection.Normalized()), 0.0f);
+	return lambertCosine;
 }
