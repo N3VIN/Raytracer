@@ -76,17 +76,6 @@ namespace dae {
 	{
 		HitRecord tempHitRecord{};
 
-		/*for (const auto& i : m_PlaneGeometries)
-		{
-			if (GeometryUtils::HitTest_Plane(i, ray, tempHitRecord, true))
-			{
-				return true;
-			}
-
-		}*/
-
-		//..
-
 		for (const auto& i : m_SphereGeometries)
 		{
 			if (GeometryUtils::HitTest_Sphere(i, ray, tempHitRecord, true))
@@ -248,14 +237,6 @@ namespace dae {
 
 		const auto matLambert_GreyBlue = AddMaterial(new Material_Lambert({ 0.49f, 0.57f, 0.57f }, 1.f));
 
-		/*const auto matLambertPhong1 = AddMaterial(new Material_LambertPhong{ colors::Blue, 0.5f, 0.5f, 3.f });
-		const auto matLambertPhong2 = AddMaterial(new Material_LambertPhong{ colors::Blue, 0.5f, 0.5f, 15.f });
-		const auto matLambertPhong3 = AddMaterial(new Material_LambertPhong{ colors::Blue, 0.5f, 0.5f, 50.f });*/
-
-		/*AddSphere({ -1.75f, 1.f, 0.f }, 0.75f, matLambertPhong1);
-		AddSphere({ 0.f, 1.f, 0.f }, 0.75f, matLambertPhong2);
-		AddSphere({ 1.75f, 1.f, 0.f }, 0.75f, matLambertPhong3);*/
-
 		//Spheres
 		AddSphere({ -1.75f, 1.f, 0.f }, 0.75f, matCT_GreyRoughMetal);
 		AddSphere({ 0.f, 1.f, 0.f }, 0.75f, matCT_GreyMediumMetal);
@@ -287,7 +268,6 @@ namespace dae {
 		m_Camera.updateFovAngle(45.f);
 
 		//Materials
-		//const auto matLambert_GreyBlue = AddMaterial(new Material_Lambert({ 0.49f, 0.57f, 0.97f }, 1.f));
 		const auto matLambert_GreyBlue = AddMaterial(new Material_Lambert({ 0.49f, 0.57f, 0.57f }, 1.f));
 		const auto matLambert_White = AddMaterial(new Material_Lambert(colors::White, 1.f));
 
@@ -298,31 +278,9 @@ namespace dae {
 		AddPlane({ 5.f, 0.f, 0.f }, { -1.f, 0.f, 0.f }, matLambert_GreyBlue);
 		AddPlane({ -5.f, 0.f, 0.f }, { 1.f, 0.f, 0.f }, matLambert_GreyBlue);
 
-		//Triangle (Temp)
-		/*auto triangle = Triangle{ { -.75f, .5f, .0f}, {-.75, 2.f, .0f}, {.75, .5f, 0.f} };
-		triangle.cullMode = TriangleCullMode::BackFaceCulling;
-		triangle.materialIndex = matLambert_White;
-
-		m_Triangles.emplace_back(triangle);*/
 
 		//TriangleMesh
-		 
 		pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
-		pMesh->positions = { {-.75f, -1.f, .0f}, {-.75f, 1.f, .0f}, {.75f, 1.f, 1.f}, {.75f, -1.f, 0.f} };
-		pMesh->indices = {
-			0, 1, 2,
-			0, 2, 3
-		};
-
-		pMesh->CalculateNormals();
-
-		pMesh->Translate({ 0.f, 1.5f, 0.f });
-		//pMesh->Scale({ 2.f, 2.f, 2.f });
-		pMesh->UpdateAABB();
-
-		pMesh->UpdateTransforms();
-
-		/*pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
 		Utils::ParseOBJ("Resources/simple_cube.obj",
 			pMesh->positions,
 			pMesh->normals,
@@ -332,18 +290,7 @@ namespace dae {
 		pMesh->Translate({ 0.0f, 1.f, 0.f });
 
 		pMesh->UpdateAABB();
-		pMesh->UpdateTransforms();*/
-
-		/*pMesh = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
-		Utils::ParseOBJ("Resources/Lowpoly_bunny.obj",
-			pMesh->positions,
-			pMesh->normals,
-			pMesh->indices);
-
-		pMesh->Scale({ 2.f, 2.f, 2.f });
-
-		pMesh->UpdateAABB();
-		pMesh->UpdateTransforms();*/
+		pMesh->UpdateTransforms();
 
 		//Light
 		AddPointLight({ 0.f, 5.f, 5.f }, 50.f, ColorRGB{ 1.f, 0.61f, 0.45f });
@@ -425,7 +372,6 @@ namespace dae {
 	{
 		Scene::Update(pTimer);
 
-		//const auto yawAngle = (cos(pTimer->GetTotal()) + 1.f) / 2.f * PI_2;
 		for (const auto i : m_Meshes)
 		{
 			i->RotateY(PI_DIV_2 * pTimer->GetTotal());

@@ -24,20 +24,8 @@ namespace dae
 
 			float t{};
 
-			/*if (discriminant < 0)
-			{
-				return false;
-			}*/
 			if (discriminant > 0)
 			{
-				//t = ((-b) + sqrt(discriminant)) / (2 * a);
-
-				/*if (t <= ray.min)
-				{
-					t = ((-b) - sqrt(discriminant)) / (2 * a);
-
-				}*/
-
 				t = ((-b) - sqrt(discriminant)) / (2 * a);
 
 				if (t >= ray.min && t <= ray.max)
@@ -161,37 +149,6 @@ namespace dae
 			const Vector3 pVec{ Vector3::Cross(ray.direction, edge2) };
 			const float det = Vector3::Dot(edge1, pVec);
 
-
-			//if (det < -FLT_EPSILON)
-			//{
-			//	//backFace hit
-			//	if (!ignoreHitRecord && triangle.cullMode == TriangleCullMode::BackFaceCulling)
-			//	{
-			//		return false; // culling
-			//	}
-			//	if (ignoreHitRecord && triangle.cullMode == TriangleCullMode::FrontFaceCulling)
-			//	{
-			//		return false; // shadow inverted culling
-			//	}
-			//}
-			//else if(det > FLT_EPSILON)
-			//{
-			//	// Frontface hit
-			//	if (!ignoreHitRecord && triangle.cullMode == TriangleCullMode::FrontFaceCulling)
-			//	{
-			//		return false;
-			//	}
-			//	if (ignoreHitRecord && triangle.cullMode == TriangleCullMode::BackFaceCulling)
-			//	{
-			//		return false;
-			//	}
-
-			//}
-			//else
-			//{
-			//	return false;
-			//}
-
 			const float invDet = 1 / det;
 
 			const Vector3 tVec = ray.origin - triangle.v0;
@@ -218,52 +175,6 @@ namespace dae
 				return false;
 
 			const Vector3 p{ ray.origin + (t * ray.direction) };
-
-
-			//..
-
-
-			//Vector3 center{(triangle.v0 + triangle.v1 + triangle.v2) / 3.f};
-
-			//float t{ Vector3::Dot((center - ray.origin), triangle.normal) / Vector3::Dot(ray.direction, triangle.normal) };
-
-			//if (t < ray.min || t > ray.max)
-			//{
-			//	return false;
-			//}
-
-			//Vector3 p{ ray.origin + (t * ray.direction) };
-
-			//Vector3 edge{};
-			//Vector3 pointToSide{};
-
-			//// edge 1
-			//edge = triangle.v1 - triangle.v0;
-			//pointToSide = p - triangle.v0;
-
-			//if (Vector3::Dot(triangle.normal, Vector3::Cross(edge, pointToSide)) < 0)
-			//{
-			//	return false;
-			//}
-
-			//// edge 2
-			//edge = triangle.v2 - triangle.v1;
-			//pointToSide = p - triangle.v1;
-
-			//if (Vector3::Dot(triangle.normal, Vector3::Cross(edge, pointToSide)) < 0)
-			//{
-			//	return false;
-			//}
-
-			//// edge 3
-			//edge = triangle.v0 - triangle.v2;
-			//pointToSide = p - triangle.v2;
-
-			//if (Vector3::Dot(triangle.normal, Vector3::Cross(edge, pointToSide)) < 0)
-			//{
-			//	return false;
-			//}
-
 
 			hitRecord.materialIndex = triangle.materialIndex;
 			hitRecord.origin = p;

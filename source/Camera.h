@@ -22,11 +22,6 @@ namespace dae
 		Vector3 up{ Vector3::UnitY };
 		Vector3 right{ Vector3::UnitX };
 		
-		//manually trying to rotate doesnt work properly as showed in the pdf.
-		/*Vector3 forward{ 0.266f, -0.453f, 0.860f };
-		Vector3 up{ Vector3::UnitY };
-		Vector3 right{ Vector3::UnitX };*/
-
 		float totalPitch{ 0.f };
 		float totalYaw{ 0.f };
 
@@ -92,8 +87,6 @@ namespace dae
 			//Mouse Input
 			MouseMovement(deltaTime);
 
-			/*right = Vector3::Cross(up, forward).Normalized();
-			up = Vector3::Cross(forward, right).Normalized();*/
 		}
 
 		void updateFovAngle(float angle)
@@ -173,9 +166,6 @@ namespace dae
 			int mouseX, mouseY;
 			float sensitivity{ 0.5f };
 			auto mouse = SDL_GetRelativeMouseState(&mouseX, &mouseY);
-
-			//std::cout << mouseX << ", " << mouseY << std::endl;
-			//std::cout << mouse << std::endl;
 
 			if (mouse == SDL_BUTTON(3)) // rotate yaw and pitch.
 			{

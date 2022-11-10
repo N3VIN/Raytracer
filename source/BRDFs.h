@@ -53,7 +53,6 @@ namespace dae
 		 */
 		static ColorRGB FresnelFunction_Schlick(const Vector3& h, const Vector3& v, const ColorRGB& f0)
 		{
-			//Vector3 halfVector{ (v + h) / (v + h).Magnitude() };
 			ColorRGB fresnel{};
 			float hDotV{ std::max(Vector3::Dot(h, v) , 0.f) };
 			fresnel = f0 + (ColorRGB{ 1, 1, 1 } - f0) * (powf(1 - hDotV, 5));

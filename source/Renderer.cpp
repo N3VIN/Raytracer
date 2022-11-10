@@ -30,7 +30,6 @@ Renderer::Renderer(SDL_Window * pWindow) :
 void Renderer::Render(Scene* pScene) const
 {
 	Camera& camera = pScene->GetCamera();
-	//const Matrix cameraToWorld{ camera.CalculateCameraToWorld() };
 
 	camera.CalculateCameraToWorld();
 
@@ -113,11 +112,6 @@ void dae::Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, f
 
 	const Vector3 forwardVec{ cx, cy, 1 };
 
-	//RayDirection calculations.
-	//Vector3 rayDirection{ (x * right) + (y * up) + look};
-	//Vector3 rayDirection{ transformedVector.GetAxisX().x, transformedVector.GetAxisY().y, transformedVector.GetAxisZ().z};
-	
-	//Vector3 rayDirection{ cameraToWorld.TransformVector(forwardVec.Normalized()) };
 	const Vector3 rayDirection{ camera.cameraToWorld.TransformVector(forwardVec.Normalized())};
 	rayDirection.Normalized();
 
@@ -150,24 +144,6 @@ void dae::Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, f
 			}
 			if (!occluderHit)
 			{
-				/*switch (m_CurrentLightingMode)
-				{
-				case dae::Renderer::LightingMode::ObservedArea:
-					finalColor += ColorRGB({ 1.f, 1.f, 1.f }) * GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin));
-					break;
-				case dae::Renderer::LightingMode::Radiance:
-					finalColor += LightUtils::GetRadiance(i, closestHit.origin);
-					break;
-				case dae::Renderer::LightingMode::BRDF:
-					finalColor += materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection);
-					break;
-				case dae::Renderer::LightingMode::Combined:
-					finalColor += LightUtils::GetRadiance(i, closestHit.origin)
-						* materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection)
-						* GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin));
-					break;
-				}*/
-			
 				switch (m_CurrentLightingMode)
 				{
 				case dae::Renderer::LightingMode::ObservedArea:
