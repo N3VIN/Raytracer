@@ -5,11 +5,10 @@ Interactive CPU Raytracer.
 ## Demo
 
 
+![33b92386e1fc031bb785fd14a6fafa7b](https://github.com/N3VIN/Raytracer/assets/90082162/23159b0c-1137-45ac-b569-6b096c2734ad)
 
+![image](https://github.com/N3VIN/Raytracer/assets/90082162/f90520e0-484a-4c7a-9301-d39359cd7226)
 
-![Raytracer_BUNNY](https://github.com/N3VIN/Raytracer/assets/90082162/63eec274-9119-4411-9918-8c856ae24e54)
-
-![Raytracer_REFERENCE](https://github.com/N3VIN/Raytracer/assets/90082162/3a1294d3-d1b3-42ce-8dfd-8961bbfd2281)
 
 ### Features
 - Lambert and Phong Shading Model.
