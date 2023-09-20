@@ -15,3 +15,4 @@ Interactive CPU Raytracer.
 - PBR Support.
 - Multithreading.
 - AABB Slab Test.
+- Möller-Trumbore intersection algorithm.
