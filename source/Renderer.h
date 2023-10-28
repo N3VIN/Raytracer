@@ -44,6 +44,7 @@ namespace dae
 
 		int m_Width{};
 		int m_Height{};
+		int m_NumBounces{5};
 		float m_AspectRatio{};
 
 		enum class LightingMode
@@ -56,6 +57,7 @@ namespace dae
 
 		LightingMode m_CurrentLightingMode{ LightingMode::Combined };
 		bool m_ShadowsEnabled{ true };
+		bool m_ReflectionsEnabled{ true };
 
 		//
 

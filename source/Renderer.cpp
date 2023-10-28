@@ -16,7 +16,7 @@
 
 using namespace dae;
 
-Renderer::Renderer(SDL_Window * pWindow) :
+Renderer::Renderer(SDL_Window* pWindow) :
 	m_pWindow(pWindow),
 	m_pBuffer(SDL_GetWindowSurface(pWindow))
 {
@@ -115,53 +115,81 @@ void dae::Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, f
 	const Vector3 rayDirection{ camera.cameraToWorld.TransformVector(forwardVec.Normalized())};
 	rayDirection.Normalized();
 
-	const Ray viewRay{ camera.origin, rayDirection };
+	Ray viewRay{ camera.origin, rayDirection };
 	ColorRGB finalColor{};
+	float multiplier = 1.0f;
+	float reflectivity{};
 
-	HitRecord closestHit{};
-
-
-	pScene->GetClosestHit(viewRay, closestHit);
-
-	if (closestHit.didHit)
+	for (int bounce = 0; bounce < m_NumBounces; bounce++)
 	{
-		for (const auto& i : lights)
+		HitRecord closestHit{};
+		pScene->GetClosestHit(viewRay, closestHit);
+
+		if (closestHit.didHit)
 		{
-			const Vector3 startPoint{ closestHit.origin + closestHit.normal * 0.01f };
-			const Vector3 direction{ LightUtils::GetDirectionToLight(i, startPoint) };
-			Ray lightRay{ startPoint, direction.Normalized() };
-			lightRay.min = 0.0001f;
-			lightRay.max = direction.Magnitude();
-			bool occluderHit{ false };
-
-			const auto lambertCosine{ GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin)) };
-			const auto radiance{ LightUtils::GetRadiance(i, closestHit.origin) };
-			const auto brdf{ materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection) };
-
-			if (m_ShadowsEnabled)
+			for (const auto& i : lights)
 			{
-				occluderHit = pScene->DoesHit(lightRay);
-			}
-			if (!occluderHit)
-			{
-				switch (m_CurrentLightingMode)
+				const Vector3 startPoint{ closestHit.origin + closestHit.normal * 0.01f };
+				const Vector3 direction{ LightUtils::GetDirectionToLight(i, startPoint) };
+				Ray lightRay{ startPoint, direction.Normalized() };
+				lightRay.min = 0.0001f;
+				lightRay.max = direction.Magnitude();
+				bool occluderHit{ false };
+
+				const auto lambertCosine{ GetLambertCosine(closestHit.normal, LightUtils::GetDirectionToLight(i, closestHit.origin)) };
+				const auto radiance{ LightUtils::GetRadiance(i, closestHit.origin) };
+				const auto brdf{ materials[closestHit.materialIndex]->Shade(closestHit, LightUtils::GetDirectionToLight(i, closestHit.origin).Normalized(), rayDirection) };
+
+				if (m_ShadowsEnabled)
 				{
-				case dae::Renderer::LightingMode::ObservedArea:
-					finalColor += ColorRGB({ 1.f, 1.f, 1.f }) * lambertCosine;
-					break;
-				case dae::Renderer::LightingMode::Radiance:
-					finalColor += radiance;
-					break;
-				case dae::Renderer::LightingMode::BRDF:
-					finalColor += brdf;
-					break;
-				case dae::Renderer::LightingMode::Combined:
-					finalColor += radiance
-						* brdf
-						* lambertCosine;
-					break;
+					occluderHit = pScene->DoesHit(lightRay);
+				}
+				if (!occluderHit)
+				{
+					switch (m_CurrentLightingMode)
+					{
+					case dae::Renderer::LightingMode::ObservedArea:
+						finalColor += ColorRGB({ 1.f, 1.f, 1.f }) * lambertCosine;
+						break;
+					case dae::Renderer::LightingMode::Radiance:
+						finalColor += radiance;
+						break;
+					case dae::Renderer::LightingMode::BRDF:
+						finalColor += brdf;
+						break;
+					case dae::Renderer::LightingMode::Combined:
+						if(bounce > 0)
+						{
+							finalColor += radiance
+								* brdf
+								* lambertCosine
+								* reflectivity
+								* multiplier;
+						}
+						else
+						{
+							finalColor += radiance
+								* brdf
+								* lambertCosine;
+						}
+						break;
+					}
 				}
 			}
+
+			if (m_ReflectionsEnabled)
+			{
+				reflectivity = materials[closestHit.materialIndex]->GetReflectivity();
+				multiplier *= 0.7f;
+				viewRay.origin = closestHit.origin + closestHit.normal * 0.0001f;
+				viewRay.direction = Vector3::Reflect(viewRay.direction, closestHit.normal);
+			}
+			if (!m_ReflectionsEnabled || reflectivity < FLT_EPSILON)
+			{
+				break;
+			}
+
+
 		}
 	}
 	//Update Color in Buffer

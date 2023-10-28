@@ -25,6 +25,8 @@ namespace dae
 		 * \return color
 		 */
 		virtual ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) = 0;
+		virtual float GetReflectivity() { return 0.0f; }
+
 	};
 #pragma endregion
 
@@ -132,6 +134,11 @@ namespace dae
 			ColorRGB kd = (static_cast<bool>(m_Metalness)) ? ColorRGB(0, 0, 0) : (ColorRGB(1, 1, 1) - fresnel);
 
 			return BRDF::Lambert(kd, m_Albedo) + cookTorrance;
+		}
+
+		float GetReflectivity() override
+		{
+			return (1.0f - m_Roughness) * m_Metalness;
 		}
 
 	private:
