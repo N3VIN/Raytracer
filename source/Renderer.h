@@ -35,6 +35,10 @@ namespace dae
 		{
 			m_ShadowsEnabled = !m_ShadowsEnabled;
 		}
+		void ToggleReflections()
+		{
+			m_ReflectionsEnabled = !m_ReflectionsEnabled;
+		}
 
 	private:
 		SDL_Window* m_pWindow{};

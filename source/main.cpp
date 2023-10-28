@@ -81,6 +81,9 @@ int main(int argc, char* args[])
 				case SDLK_F2:
 					pRenderer->ToggleShadows();
 					break;
+				case SDLK_F1:
+					pRenderer->ToggleReflections();
+					break;
 				case SDLK_F6:
 					pTimer->StartBenchmark();
 					break;

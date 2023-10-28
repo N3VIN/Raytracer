@@ -329,8 +329,10 @@ namespace dae {
 		AddPlane({ 0.f, 0.f, 10.f }, { 0.f, 0.f, -1.f }, matLambert_GreyBlue);
 		AddPlane({ 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f }, matLambert_GreyBlue);
 		AddPlane({ 0.f, 10.f, 0.f }, { 0.f, -1.f, 0.f }, matLambert_GreyBlue);
-		AddPlane({ 5.f, 0.f, 0.f }, { -1.f, 0.f, 0.f }, matLambert_GreyBlue);
-		AddPlane({ -5.f, 0.f, 0.f }, { 1.f, 0.f, 0.f }, matLambert_GreyBlue);
+		//AddPlane({ 5.f, 0.f, 0.f }, { -1.f, 0.f, 0.f }, matLambert_GreyBlue);
+		//AddPlane({ -5.f, 0.f, 0.f }, { 1.f, 0.f, 0.f }, matLambert_GreyBlue);
+		AddPlane({ 5.f, 0.f, 0.f }, { -1.f, 0.f, 0.f }, matCT_GreySmoothMetal);
+		AddPlane({ -5.f, 0.f, 0.f }, { 1.f, 0.f, 0.f }, matCT_GreySmoothMetal);
 
 		//Spheres
 		AddSphere({ -1.75f, 1.f, 0.f }, 0.75f, matCT_GreyRoughMetal);
