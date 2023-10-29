@@ -117,10 +117,10 @@ void dae::Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, f
 
 	Ray viewRay{ camera.origin, rayDirection };
 	ColorRGB finalColor{};
-	float multiplier = 1.0f;
+	float lambda = 1.0f;
 	float reflectivity{};
 
-	for (int bounce = 0; bounce < m_NumBounces; bounce++)
+	for (int bounce = 0; bounce <= m_NumBounces; bounce++)
 	{
 		HitRecord closestHit{};
 		pScene->GetClosestHit(viewRay, closestHit);
@@ -164,7 +164,7 @@ void dae::Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, f
 								* brdf
 								* lambertCosine
 								* reflectivity
-								* multiplier;
+								* lambda;
 						}
 						else
 						{
@@ -180,8 +180,8 @@ void dae::Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, f
 			if (m_ReflectionsEnabled)
 			{
 				reflectivity = materials[closestHit.materialIndex]->GetReflectivity();
-				multiplier *= 0.7f;
-				viewRay.origin = closestHit.origin + closestHit.normal * 0.0001f;
+				lambda *= 0.7f;
+				viewRay.origin = closestHit.origin + closestHit.normal * 0.01f;
 				viewRay.direction = Vector3::Reflect(viewRay.direction, closestHit.normal);
 			}
 			if (!m_ReflectionsEnabled || reflectivity < FLT_EPSILON)

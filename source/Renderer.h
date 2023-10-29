@@ -48,7 +48,7 @@ namespace dae
 
 		int m_Width{};
 		int m_Height{};
-		int m_NumBounces{5};
+		int m_NumBounces{10};
 		float m_AspectRatio{};
 
 		enum class LightingMode
