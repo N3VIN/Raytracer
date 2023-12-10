@@ -1,5 +1,5 @@
 # Raytracer
-Interactive CPU Raytracer.
+Interactive Multithreaded PBR CPU Raytracer.
 
 
 ## Demo
